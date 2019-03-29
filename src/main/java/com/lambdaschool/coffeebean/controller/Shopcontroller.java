@@ -1,6 +1,7 @@
 package com.lambdaschool.coffeebean.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.lambdaschool.coffeebean.CriteriaAPIProducts.ProductWithReview;
 import com.lambdaschool.coffeebean.model.Product;
 import com.lambdaschool.coffeebean.model.Review;
 import com.lambdaschool.coffeebean.model.ReviewItem;
@@ -83,11 +84,6 @@ public class Shopcontroller
         return reviewrepos.getAllReviewItems();
     }
 
-//    @GetMapping("/reviewitems")
-//    public List<Object> getAllReviewItems()
-//    {
-//        return reviewrepos.getAllReviewItems();
-//    }
 
     @GetMapping("/reviewitems/{page}")
     public List<ReviewItem> get10ReviewItemsByPage(@PathVariable int page)
@@ -95,5 +91,16 @@ public class Shopcontroller
         int start = (page - 1) * 10;
 
         return reviewrepos.get10ReviewItemsByPage(start);
+    }
+
+    @GetMapping("/search/productwithreview/{searchString}/page/{page}")
+    public List<ProductWithReview> get10ProductsWithReviewsDataBySearchString(@PathVariable String searchString, @PathVariable int page)
+    {
+        String[] searchArray = searchString.split(" ");
+        Set<String> searchSet = new HashSet<>(Arrays.asList(searchArray));
+
+        int start = (page - 1) * 10;
+
+        return productrepos.get10ProductsWithReviewsData(searchSet, start);
     }
 }
