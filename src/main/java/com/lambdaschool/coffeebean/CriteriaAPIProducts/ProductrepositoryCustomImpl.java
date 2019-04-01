@@ -1,7 +1,7 @@
 package com.lambdaschool.coffeebean.CriteriaAPIProducts;
 
 import com.lambdaschool.coffeebean.model.Product;
-import com.lambdaschool.coffeebean.model.ReviewItem;
+import com.lambdaschool.coffeebean.model.Review;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -20,9 +20,9 @@ public class ProductrepositoryCustomImpl implements ProductrepositoryCustom
     {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Product> query = cb.createQuery(Product.class);
-        Root<Product> product = query.from(Product.class);
+        Root<Product> productRoot = query.from(Product.class);
 
-        Path<String> productPath = product.get("productname");
+        Path<String> productPath = productRoot.get("productname");
 
         List<Predicate> predicates = new ArrayList<>();
         for (String word : searchSet)
@@ -31,7 +31,7 @@ public class ProductrepositoryCustomImpl implements ProductrepositoryCustom
             predicates.add(cb.like(productPath, word));
         }
 
-        query.select(product)
+        query.select(productRoot)
                 .where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
 
         return entityManager.createQuery(query)
@@ -41,27 +41,38 @@ public class ProductrepositoryCustomImpl implements ProductrepositoryCustom
     }
 
     @Override
-    public List<ReviewItem> dynamicQueryForReviewItem(Set<String> searchSet, int start)
+    public List<ProductWithReview> get10ProductsWithReviewsData(Set<String> searchSet, int start)
     {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ReviewItem> query = cb.createQuery(ReviewItem.class);
-        Root<ReviewItem> product = query.from(ReviewItem.class);
+        CriteriaQuery<ProductWithReview> query = cb.createQuery(ProductWithReview.class);
+        Root<Product> productRoot = query.from(Product.class);
+        Path<String> productPath = productRoot.get("productname");
 
-        Path<String> productPath = product.get("productname");
+        Join<Product, Review> reviewJoin = productRoot.join("productReviews", JoinType.LEFT);
 
-        List<Predicate> predicates = new ArrayList<>();
-        for (String word : searchSet)
-        {
-            word = "%" + word + "%";
-            predicates.add(cb.like(productPath, word));
-        }
+        query
+                .select(cb.construct(ProductWithReview.class,
+                      productRoot.get("productid"),
+                      productRoot.get("productname"),
+                      productRoot.get("description"),
+                      productRoot.get("image"),
+                      productRoot.get("price"),
+                      cb.avg(reviewJoin.get("stars")),
+                      cb.countDistinct(reviewJoin)))
+                .where(cb.and(searchSet.stream()
+                      .map(word -> cb.like(productPath, "%" + word + "%"))
+                      .toArray(Predicate[]::new)))
+                .groupBy(
+                      productRoot.get("productid"), productRoot.get("productname"),
+                      productRoot.get("description"), productRoot.get("image"),
+                      productRoot.get("price"))
+                .orderBy(cb.desc(cb.avg(reviewJoin.get("stars"))));
 
-        query.select(product)
-                .where(cb.and(predicates.toArray(new Predicate[predicates.size()])));
-
-        return entityManager.createQuery(query)
+        List<ProductWithReview> resultList = entityManager.createQuery(query)
                 .setFirstResult(start)
                 .setMaxResults(10)
                 .getResultList();
+
+        return resultList;
     }
 }
