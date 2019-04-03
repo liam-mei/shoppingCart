@@ -36,12 +36,19 @@ public class CheckIsAdmin
 
     protected static Object isUsernameAndEmailUnique(@RequestBody User newuser, Userrepository userrepos)
     {
+        CheckUsernameEmailIsUnique(newuser, userrepos);
+        HashMap<String, Object> returnObject = new HashMap<>();
+        if (!returnObject.isEmpty()) return returnObject;
+        return null;
+    }
+
+    public static HashMap<String, Object> CheckUsernameEmailIsUnique(@RequestBody User newuser, Userrepository userrepos)
+    {
         String email = newuser.getEmail();
         HashMap<String, Object> returnObject = new HashMap<>();
 
         if (userrepos.findByUsername(newuser.getUsername()) != null) returnObject.put("usernameAlreadyExists", true);
         if (email != null && userrepos.findByEmail(email) != null) returnObject.put("emailAlreadyExists", true);
-        if (!returnObject.isEmpty()) return returnObject;
-        return null;
+        return returnObject;
     }
 }
