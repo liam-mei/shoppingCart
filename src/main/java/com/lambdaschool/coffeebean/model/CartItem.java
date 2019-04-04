@@ -1,5 +1,5 @@
 package com.lambdaschool.coffeebean.model;
 
-public class OrderItem
+public class CartItem
 {
 }
