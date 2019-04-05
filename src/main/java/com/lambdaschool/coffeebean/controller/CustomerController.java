@@ -1,11 +1,11 @@
 package com.lambdaschool.coffeebean.controller;
 
-import com.lambdaschool.coffeebean.model.CurrentUser;
-import com.lambdaschool.coffeebean.model.OrderItem;
+import com.lambdaschool.coffeebean.model.Order;
 import com.lambdaschool.coffeebean.model.User;
-import com.lambdaschool.coffeebean.repository.Orderrepository;
-import com.lambdaschool.coffeebean.repository.Userrepository;
+import com.lambdaschool.coffeebean.repository.OrderRepository;
+import com.lambdaschool.coffeebean.repository.UserRepository;
 import com.lambdaschool.coffeebean.service.CheckIsAdmin;
+import com.lambdaschool.coffeebean.service.CurrentUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,16 +20,16 @@ import java.util.List;
 public class CustomerController extends CheckIsAdmin
 {
     @Autowired
-    Userrepository userrepos;
+    UserRepository userrepos;
 
     @Autowired
-    Orderrepository orderrepos;
+    OrderRepository orderrepos;
 
     @GetMapping("/userid/{userid}")
     public Object findUserByUserid(@PathVariable long userid)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long currentUserId = currentuser.getCurrentuserid();
+        long currentUserId = currentuser.getCurrentUserId();
 
         boolean isAdmin = testIsAdmin(currentuser);
 
@@ -67,12 +67,12 @@ public class CustomerController extends CheckIsAdmin
     public Object updateUser(@RequestBody User updatedUser)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long currentUserId = currentuser.getCurrentuserid();
+        long currentUserId = currentuser.getCurrentUserId();
 
         User foundUser = userrepos.findById(currentUserId).get();
 
         String currentEncryptedPassword = foundUser.getPassword();
-        String unencryptedCurrentPassword = updatedUser.getRawPassword();
+        String unencryptedCurrentPassword = updatedUser.getCurrentPassword();
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         HashMap<String, Object> returnObject = new HashMap();
@@ -86,23 +86,23 @@ public class CustomerController extends CheckIsAdmin
             if (!returnObject.isEmpty()) return returnObject;
 
             // User - personal details field - can be user changed
-            if (updatedUser.getShippingaddress() == null)
-                updatedUser.setShippingaddress(foundUser.getShippingaddress());
-            if (updatedUser.getBillingaddress() == null) updatedUser.setBillingaddress(foundUser.getBillingaddress());
-            if (updatedUser.getCustomerphone() == null) updatedUser.setCustomerphone(foundUser.getCustomerphone());
-            if (updatedUser.getPaymentmethod() == null) updatedUser.setPaymentmethod(foundUser.getPaymentmethod());
-            if (updatedUser.getCustomername() == null) updatedUser.setCustomername(foundUser.getCustomername());
+//            if (updatedUser.getShippingaddress() == null)
+//                updatedUser.setShippingaddress(foundUser.getShippingaddress());
+//            if (updatedUser.getBillingaddress() == null) updatedUser.setBillingaddress(foundUser.getBillingaddress());
+            if (updatedUser.getCustomerPhone() == null) updatedUser.setCustomerPhone(foundUser.getCustomerPhone());
+//            if (updatedUser.getPaymentmethod() == null) updatedUser.setPaymentmethod(foundUser.getPaymentmethod());
+            if (updatedUser.getMiddleName() == null) updatedUser.setMiddleName(foundUser.getMiddleName());
+            if (updatedUser.getFirstName() == null) updatedUser.setFirstName(foundUser.getFirstName());
+            if (updatedUser.getLastName() == null) updatedUser.setLastName(foundUser.getLastName());
             if (updatedUser.getUsername() == null) updatedUser.setUsername(foundUser.getUsername());
             if (updatedUser.getPassword() == null) updatedUser.setPassword(foundUser.getPassword());
             if (updatedUser.getEmail() == null) updatedUser.setEmail(foundUser.getEmail());
             if (updatedUser.getRole() == null) updatedUser.setRole(foundUser.getRole());
 
             // fields user can't change
-            updatedUser.setUserid(currentUserId);
-            updatedUser.setOrderhistory(foundUser.getOrderhistory());
-            updatedUser.setProductsincart(foundUser.getProductsincart());
-//            updatedUser.setTotalorderhistory(foundUser.getTotalorderhistory());
-            updatedUser.setRawPassword(null);
+            updatedUser.setUserId(currentUserId);
+            updatedUser.setOrderHistory(foundUser.getOrderHistory());
+            updatedUser.setCurrentPassword(null);
 
             return userrepos.save(updatedUser);
         } else
@@ -114,15 +114,44 @@ public class CustomerController extends CheckIsAdmin
 
     // ================ ORDERS =========================
     @GetMapping("/orders/orderid/{orderid}")
-    public List<OrderItem> findOrderItemsByOrderid(@PathVariable long orderid)
+    public Object findOrderItemsByOrderid(@PathVariable long orderid)
     {
-        return orderrepos.getOrderItemsByOrderid(orderid);
+        CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        boolean isAdmin = testIsAdmin(currentuser);
+        boolean orderBelongs = false;
+
+        List<Order> userOrders = orderrepos.findAll();
+
+        for ( int i=0; i<userOrders.size(); i++)
+        {
+            if (userOrders.get(i).getOrderId() == orderid) orderBelongs = true;
+        }
+        if (orderBelongs || isAdmin)
+        {
+            return orderrepos.findById(orderid).get();
+        }
+        else
+        {
+            return "order does not belong to you";
+        }
     }
 
-    @GetMapping("/orders/userid/{userid}")
-    public List<OrderItem> getOrderItemsByUserid(@PathVariable long userid)
+    @GetMapping("/orders/allorders/{userid}")
+    public Object getOrderItemsByUserid(@PathVariable long userid)
     {
-        return orderrepos.getOrderItemsByUserid(userid);
+        CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long currentUserId = currentuser.getCurrentUserId();
+
+        boolean isAdmin = testIsAdmin(currentuser);
+
+        if (currentUserId == userid || isAdmin)
+        {
+            return orderrepos.findAll();
+        }
+        else
+        {
+            return doesUsernameMatch(currentUserId, userid, false);
+        }
     }
 
 }
