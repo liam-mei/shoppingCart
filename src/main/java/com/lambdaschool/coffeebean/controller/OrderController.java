@@ -1,7 +1,7 @@
 package com.lambdaschool.coffeebean.controller;
 
 import com.lambdaschool.coffeebean.model.Order;
-import com.lambdaschool.coffeebean.repository.Orderrepository;
+import com.lambdaschool.coffeebean.repository.OrderRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
@@ -15,12 +15,12 @@ import java.util.Optional;
 @Api(value = "Some value... by DKM", description = "Order Controller by DKM")
 @RestController
 @RequestMapping(path = "/orders", produces = MediaType.APPLICATION_JSON_VALUE)
-public class Ordercontroller
+public class OrderController
 {
     private final
-    Orderrepository orderrepos;
+    OrderRepository orderrepos;
 
-    public Ordercontroller(Orderrepository orderrepos)
+    public OrderController(OrderRepository orderrepos)
     {
         this.orderrepos = orderrepos;
     }
@@ -57,11 +57,11 @@ public class Ordercontroller
 
         if (foundOrder.isPresent())
         {
-            foundOrder.get().setShippedstatus(status);
+            foundOrder.get().setShippedStatus(status);
             if (status)
-                foundOrder.get().setShipdatetime(new Date());
+                foundOrder.get().setShipDateTime(new Date());
             if (!status)
-                foundOrder.get().setShipdatetime(null);
+                foundOrder.get().setShipDateTime(null);
             return orderrepos.save(foundOrder.get());
         } else
         {
