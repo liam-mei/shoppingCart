@@ -1,7 +1,7 @@
 package com.lambdaschool.coffeebean.controller;
 
 import com.lambdaschool.coffeebean.model.Product;
-import com.lambdaschool.coffeebean.repository.Productrepository;
+import com.lambdaschool.coffeebean.repository.ProductRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +14,10 @@ import java.util.Optional;
 @Api(value = "Some value... by DKM", description = "Product Controller by DKM")
 @RestController
 @RequestMapping(path = "/products", produces = MediaType.APPLICATION_JSON_VALUE)
-public class Productcontroller
+public class ProductController
 {
     @Autowired
-    Productrepository productrepos;
+    ProductRepository productrepos;
 
     @ApiOperation(value = "find all orders - DKM", response = Product.class)
     @GetMapping("")
@@ -44,18 +44,17 @@ public class Productcontroller
         Optional<Product> foundProduct = productrepos.findById(productid);
         if (foundProduct.isPresent())
         {
-            if (updatedP.getPotentialusers() ==null) updatedP.setPotentialusers(foundProduct.get().getPotentialusers());
-            if (updatedP.getProductorders() == null) updatedP.setProductorders(foundProduct.get().getProductorders());
+//            if (updatedP.getProductorders() == null) updatedP.setProductorders(foundProduct.get().getProductorders());
 //            if (updatedP.getProductusers() == null) updatedP.setProductusers(foundProduct.get().getProductusers());
-            if (updatedP.getProductname() == null) updatedP.setProductname(foundProduct.get().getProductname());
+            if (updatedP.getProductName() == null) updatedP.setProductName(foundProduct.get().getProductName());
             if (updatedP.getDescription() == null) updatedP.setDescription(foundProduct.get().getDescription());
-            if (updatedP.getExpiration() == null) updatedP.setExpiration(foundProduct.get().getExpiration());
+//            if (updatedP.getExpiration() == null) updatedP.setExpiration(foundProduct.get().getExpiration());
             if (updatedP.getSuppliers() == null) updatedP.setSuppliers(foundProduct.get().getSuppliers());
-            if (updatedP.getQuantity() == null) updatedP.setQuantity(foundProduct.get().getQuantity());
+            if (updatedP.getInventory() == null) updatedP.setInventory(foundProduct.get().getInventory());
             if (updatedP.getImage() == null) updatedP.setImage(foundProduct.get().getImage());
             if (updatedP.getPrice() == null) updatedP.setPrice(foundProduct.get().getPrice());
 
-            updatedP.setProductid(productid);
+            updatedP.setProductId(productid);
             return productrepos.save(updatedP);
         } else
         {
