@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.lambdaschool.coffeebean.CriteriaAPIProducts.ProductWithReview;
 import com.lambdaschool.coffeebean.model.Product;
 import com.lambdaschool.coffeebean.model.Review;
-import com.lambdaschool.coffeebean.model.ReviewItem;
-import com.lambdaschool.coffeebean.repository.Productrepository;
-import com.lambdaschool.coffeebean.repository.Reviewrepository;
+import com.lambdaschool.coffeebean.CriteriaAPIProducts.ReviewItem;
+import com.lambdaschool.coffeebean.repository.ProductRepository;
+import com.lambdaschool.coffeebean.repository.ReviewRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +24,13 @@ import java.util.Set;
 @Api(value = "Some value... by DKM", description = "Shop Controller by DKM")
 @RestController
 @RequestMapping(path = "/shop", produces = MediaType.APPLICATION_JSON_VALUE)
-public class Shopcontroller
+public class ShopController
 {
     @Autowired
-    Productrepository productrepos;
+    ProductRepository productrepos;
 
     @Autowired
-    Reviewrepository reviewrepos;
+    ReviewRepository reviewrepos;
 
     @JsonView(View.UserOnly.class)
     @ApiOperation(value = "find all products - DKM", response = Product.class)
@@ -71,7 +71,7 @@ public class Shopcontroller
 
     // ====== REVIEWS =========
 
-    @JsonView(View.ReviewOnly.class)
+    @JsonView(View.Essential.class)
     @GetMapping("/reviews")
     public List<Review> getAllReviews()
     {
