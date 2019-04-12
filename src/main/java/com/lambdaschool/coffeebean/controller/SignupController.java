@@ -2,8 +2,10 @@ package com.lambdaschool.coffeebean.controller;
 
 import com.lambdaschool.coffeebean.SendGrid.EmailModel;
 import com.lambdaschool.coffeebean.SendGrid.SendGridService2;
+import com.lambdaschool.coffeebean.model.Cart;
 import com.lambdaschool.coffeebean.model.User;
-import com.lambdaschool.coffeebean.repository.Userrepository;
+import com.lambdaschool.coffeebean.repository.CartRepository;
+import com.lambdaschool.coffeebean.repository.UserRepository;
 import com.lambdaschool.coffeebean.service.CheckIsAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,11 +20,14 @@ import java.util.HashMap;
 
 @RestController
 @RequestMapping(value = "/signup", produces = MediaType.APPLICATION_JSON_VALUE)
-public class Signupcontroller extends CheckIsAdmin
+public class SignupController extends CheckIsAdmin
 {
 
     @Autowired
-    private Userrepository userrepos;
+    private UserRepository userrepos;
+
+    @Autowired
+    private CartRepository cartrepos;
 
     @Autowired
     SendGridService2 emailService;
@@ -39,6 +44,7 @@ public class Signupcontroller extends CheckIsAdmin
         emailService.sendEmail(welcomeEmail);
 
         newuser.setRole("user");
+        newuser.setCart(cartrepos.save(new Cart()));
         return userrepos.save(newuser);
     }
 }
