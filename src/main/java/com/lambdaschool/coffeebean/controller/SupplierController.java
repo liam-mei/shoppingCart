@@ -1,7 +1,7 @@
 package com.lambdaschool.coffeebean.controller;
 
 import com.lambdaschool.coffeebean.model.Supplier;
-import com.lambdaschool.coffeebean.repository.Supplierrepository;
+import com.lambdaschool.coffeebean.repository.SupplierRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +14,10 @@ import java.util.Optional;
 @Api(value = "Some value... by DKM", description = "Supplier Controller by DKM")
 @RestController
 @RequestMapping(path = "/suppliers", produces = MediaType.APPLICATION_JSON_VALUE)
-public class Suppliercontroller
+public class SupplierController
 {
     @Autowired
-    Supplierrepository suppplierrepos;
+    SupplierRepository suppplierrepos;
 
     @ApiOperation(value = "find all orders - DKM", response = Supplier.class)
     @GetMapping("")
@@ -52,13 +52,13 @@ public class Suppliercontroller
 
         if (foundSupplier.isPresent())
         {
-            updatedSupplier.setSupplierid(supplierid);
-            if (updatedSupplier.getSuppliername() == null)
-                updatedSupplier.setSuppliername(foundSupplier.get().getSuppliername());
-            if (updatedSupplier.getSupplierphone() == null)
-                updatedSupplier.setSupplierphone(foundSupplier.get().getSupplierphone());
-            if (updatedSupplier.getProductsfromsupplier().isEmpty())
-                updatedSupplier.setProductsfromsupplier(foundSupplier.get().getProductsfromsupplier());
+            updatedSupplier.setSupplierId(supplierid);
+            if (updatedSupplier.getSupplierName() == null)
+                updatedSupplier.setSupplierName(foundSupplier.get().getSupplierName());
+            if (updatedSupplier.getSupplierPhone() == null)
+                updatedSupplier.setSupplierPhone(foundSupplier.get().getSupplierPhone());
+            if (updatedSupplier.getProductsFromSupplier().isEmpty())
+                updatedSupplier.setProductsFromSupplier(foundSupplier.get().getProductsFromSupplier());
             return suppplierrepos.save(updatedSupplier);
         } else
         {
