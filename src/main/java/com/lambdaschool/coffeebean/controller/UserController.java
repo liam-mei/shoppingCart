@@ -1,7 +1,7 @@
 package com.lambdaschool.coffeebean.controller;
 
 import com.lambdaschool.coffeebean.model.User;
-import com.lambdaschool.coffeebean.repository.Userrepository;
+import com.lambdaschool.coffeebean.repository.UserRepository;
 import com.lambdaschool.coffeebean.service.CheckIsAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -13,12 +13,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
-public class Usercontroller extends CheckIsAdmin
+public class UserController extends CheckIsAdmin
 {
 
     @Autowired
     // private UserService userService;
-    private Userrepository userrepos;
+    private UserRepository userrepos;
 
     @GetMapping("")
     public List<User> listAllUsers()
@@ -53,7 +53,7 @@ public class Usercontroller extends CheckIsAdmin
             return new HashMap<>()
             {{
                 put("username", foundUser.get().getUsername());
-                put("userid", foundUser.get().getUserid());
+                put("userid", foundUser.get().getUserId());
                 put("deleted", true);
             }};
         } else
