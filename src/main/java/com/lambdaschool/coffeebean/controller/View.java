@@ -6,7 +6,7 @@ public class View
     {
     }
 
-    public interface ReviewOnly
+    public interface Essential
     {
     }
 
