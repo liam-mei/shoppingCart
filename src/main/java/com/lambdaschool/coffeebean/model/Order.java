@@ -6,82 +6,91 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
 
+
 @Entity
 @Table(name = "orders")
 public class Order
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long orderid;
+    private long orderId;
 
-    private String shippingaddress;
-
-    private String paymentdetails;
+    private String paymentDetails;
 
     //yyyy-mm-dd HH:MM:SS
-    private Date shipdatetime;
+    private Date shipDateTime;
 
-    private boolean shippedstatus = false;
+    private boolean shippedStatus = false;
+
+    //yyyy-mm-dd HH:MM:SS
+    private Date orderDateTime = new Date();
 
     //*** ManyToOne with user ***
     @ManyToOne
-    @JoinColumn(name = "userid")
-    @JsonIgnoreProperties({"reviews", "orderhistory", "productsincart"})
+    @JoinColumn(name = "userId")
+    @JsonIgnoreProperties({
+            "reviews", "orderHistory", "cart", "currentPassword",
+            "middleName", "lastName", "customerPhone", "receiveEmails"})
     private User user;
 
-    // *** ManyToMany with product - orderproducts - owner ***
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "orderproducts",
-            joinColumns = {@JoinColumn(name = "orderid")},
-            inverseJoinColumns = {@JoinColumn(name = "productid")})
-    @JsonIgnoreProperties({"productReviews", "potentialusers", "productorders", "productusers", "suppliers"})
-    private Set<Product> orderproducts;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
+    @JsonIgnoreProperties({"order"})
+    private Set<OrderItem> itemsInOrder;
+
 
     public Order()
     {
     }
 
-    public long getOrderid()
+
+    public long getOrderId()
     {
-        return orderid;
+        return orderId;
     }
 
-    public void setOrderid(long orderid)
+    public void setOrderId(long orderId)
     {
-        this.orderid = orderid;
+        this.orderId = orderId;
     }
 
-    public String getShippingaddress()
+    public String getPaymentDetails()
     {
-        return shippingaddress;
+        return paymentDetails;
     }
 
-    //yyyy-mm-dd HH:MM:SS
-    private Date orderdatetime = new Date();
-
-    public void setShippingaddress(String shippingaddress)
+    public void setPaymentDetails(String paymentDetails)
     {
-        this.shippingaddress = shippingaddress;
+        this.paymentDetails = paymentDetails;
     }
 
-    public String getPaymentdetails()
+    public Date getShipDateTime()
     {
-        return paymentdetails;
+        return shipDateTime;
     }
 
-    public void setPaymentdetails(String paymentdetails)
+    public void setShipDateTime(Date shipDateTime)
     {
-        this.paymentdetails = paymentdetails;
+        this.shipDateTime = shipDateTime;
     }
 
-    public boolean isShippedstatus()
+    public boolean isShippedStatus()
     {
-        return shippedstatus;
+        return shippedStatus;
     }
 
-    public void setShippedstatus(boolean shippedstatus)
+    public void setShippedStatus(boolean shippedStatus)
     {
-        this.shippedstatus = shippedstatus;
+        this.shippedStatus = shippedStatus;
+    }
+
+    public Date getOrderDateTime()
+    {
+        return orderDateTime;
+    }
+
+    public void setOrderDateTime(Date orderDateTime)
+    {
+        this.orderDateTime = orderDateTime;
     }
 
     public User getUser()
@@ -94,23 +103,13 @@ public class Order
         this.user = user;
     }
 
-    public Set<Product> getOrderproducts()
+    public Set<OrderItem> getItemsInOrder()
     {
-        return orderproducts;
+        return itemsInOrder;
     }
 
-    public void setOrderproducts(Set<Product> orderproducts)
+    public void setItemsInOrder(Set<OrderItem> itemsInOrder)
     {
-        this.orderproducts = orderproducts;
-    }
-
-    public Date getShipdatetime()
-    {
-        return shipdatetime;
-    }
-
-    public void setShipdatetime(Date shipdatetime)
-    {
-        this.shipdatetime = shipdatetime;
+        this.itemsInOrder = itemsInOrder;
     }
 }
