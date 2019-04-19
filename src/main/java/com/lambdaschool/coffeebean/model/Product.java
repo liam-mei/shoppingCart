@@ -5,103 +5,87 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.lambdaschool.coffeebean.controller.View;
 
 import javax.persistence.*;
-import java.sql.Date;
+import javax.validation.constraints.Min;
 import java.util.Set;
+
 
 @Entity
 @Table(name = "products")
+//@Check(constraints = "inventory >= 0")
 public class Product
 {
-    @JsonView({View.UserOnly.class, View.ReviewOnly.class})
+    @JsonView({View.Essential.class})
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long productid;
+    private long productId;
 
-    @JsonView({View.UserOnly.class, View.ReviewOnly.class})
-    private String productname;
+    @JsonView({View.Essential.class})
+    private String productName;
 
-    @JsonView({View.UserOnly.class, View.ReviewOnly.class})
+    @JsonView({View.Essential.class})
     private String description;
 
-    @JsonView({View.UserOnly.class, View.ReviewOnly.class})
+    @JsonView({View.Essential.class})
     private Double price;
 
-    @JsonView({View.UserOnly.class})
-    private Integer quantity;
+    @JsonView({View.Essential.class})
+    @Min(0)
+    private Integer inventory;
 
-
-    //MySQL uses yyyy-mm-dd format for storing a date value
-    // Not sure how to do date yet
-    @JsonView({View.UserOnly.class})
-    private java.sql.Date expiration;
-
-    @JsonView({View.UserOnly.class, View.ReviewOnly.class})
+    @JsonView({View.Essential.class})
     private String image;
 
     // ====== Review ======
     // OneToMany with Review
-    @JsonView({View.ReviewOnly.class})
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "reviewedProduct")
     @JsonIgnoreProperties({"reviewedProduct"})
     private Set<Review> productReviews;
 
+    // OneToMany with CartItem - subowner
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
+    @JsonIgnoreProperties({"product", "cart"})
+    private Set<CartItem> cartItems;
+
     // ===== Other Join Tables ========
-
-    // *** ManyToMany with order - orderproducts - subowner***
-    @ManyToMany(mappedBy = "orderproducts", fetch = FetchType.EAGER)
-    @JsonIgnoreProperties({"orderproducts", "user"})
-    private Set<Order> productorders;
-
-    // *** ManyToMany with user - cart - subowner ***
-//    @JsonIgnore
-    @ManyToMany(mappedBy = "productsincart", fetch = FetchType.EAGER)
-    @JsonIgnoreProperties({"reviews", "orderhistory", "productsincart"})
-    private Set<User> potentialusers;
-
-//    // *** ManyToMany with user - orderhistory - subowner ***
-////    @JsonIgnore
-//    @ManyToMany(mappedBy = "totalorderhistory", fetch = FetchType.EAGER)
-//    @JsonIgnoreProperties({"reviews", "orderhistory", "productsincart", "totalorderhistory"})
-//    private Set<User> productusers;
 
     // *** ManyToMany with supplier - subowner ***
 //    @JsonIgnore
-    @ManyToMany(mappedBy = "productsfromsupplier", fetch = FetchType.EAGER)
-    @JsonIgnoreProperties("productsfromsupplier")
+    @ManyToMany(mappedBy = "productsFromSupplier", fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("productsFromSupplier")
     private Set<Supplier> suppliers;
+
+
+    public Product(String productName, String description, Double price, Integer inventory, String image)
+    {
+        this.productName = productName;
+        this.description = description;
+        this.price = price;
+        this.inventory = inventory;
+        this.image = image;
+    }
 
     public Product()
     {
     }
 
-    public Product(String productname, String description, Double price, Integer quantity, Date expiration, String image)
+    public long getProductId()
     {
-        this.productname = productname;
-        this.description = description;
-        this.price = price;
-        this.quantity = quantity;
-        this.expiration = expiration;
-        this.image = image;
+        return productId;
     }
 
-    public long getProductid()
+    public void setProductId(long productId)
     {
-        return productid;
+        this.productId = productId;
     }
 
-    public void setProductid(long productid)
+    public String getProductName()
     {
-        this.productid = productid;
+        return productName;
     }
 
-    public String getProductname()
+    public void setProductName(String productName)
     {
-        return productname;
-    }
-
-    public void setProductname(String productname)
-    {
-        this.productname = productname;
+        this.productName = productName;
     }
 
     public String getDescription()
@@ -124,14 +108,14 @@ public class Product
         this.price = price;
     }
 
-    public Integer getQuantity()
+    public Integer getInventory()
     {
-        return quantity;
+        return inventory;
     }
 
-    public void setQuantity(Integer quantity)
+    public void setInventory(Integer inventory)
     {
-        this.quantity = quantity;
+        this.inventory = inventory;
     }
 
     public String getImage()
@@ -144,45 +128,25 @@ public class Product
         this.image = image;
     }
 
-    public Date getExpiration()
+    public Set<Review> getProductReviews()
     {
-        return expiration;
+        return productReviews;
     }
 
-    public void setExpiration(Date expiration)
+    public void setProductReviews(Set<Review> productReviews)
     {
-        this.expiration = expiration;
+        this.productReviews = productReviews;
     }
 
-    public Set<Order> getProductorders()
+    public Set<CartItem> getCartItems()
     {
-        return productorders;
+        return cartItems;
     }
 
-    public void setProductorders(Set<Order> productorders)
+    public void setCartItems(Set<CartItem> cartItems)
     {
-        this.productorders = productorders;
+        this.cartItems = cartItems;
     }
-
-    public Set<User> getPotentialusers()
-    {
-        return potentialusers;
-    }
-
-    public void setPotentialusers(Set<User> potentialusers)
-    {
-        this.potentialusers = potentialusers;
-    }
-
-//    public Set<User> getProductusers()
-//    {
-//        return productusers;
-//    }
-//
-//    public void setProductusers(Set<User> productusers)
-//    {
-//        this.productusers = productusers;
-//    }
 
     public Set<Supplier> getSuppliers()
     {
@@ -192,17 +156,5 @@ public class Product
     public void setSuppliers(Set<Supplier> suppliers)
     {
         this.suppliers = suppliers;
-    }
-
-    // ===== Review Get/Set
-
-    public Set<Review> getProductReviews()
-    {
-        return productReviews;
-    }
-
-    public void setProductReviews(Set<Review> productReviews)
-    {
-        this.productReviews = productReviews;
     }
 }

@@ -11,61 +11,61 @@ public class Supplier
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long supplierid;
+    private long supplierId;
 
-    private String suppliername;
+    private String supplierName;
 
-    private String supplierphone;
+    private String supplierPhone;
 
     // *** ManyToMany with product - supplierproduct - owner ***
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "supplierproduct",
-            joinColumns = {@JoinColumn(name = "supplierid")},
-            inverseJoinColumns = {@JoinColumn(name = "productid")})
-    @JsonIgnoreProperties({"productReviews", "potentialusers", "productorders", "productusers", "suppliers"})
-    private Set<Product> productsfromsupplier;
+    @JoinTable(name = "supplierProduct",
+            joinColumns = {@JoinColumn(name = "supplierId")},
+            inverseJoinColumns = {@JoinColumn(name = "productId")})
+    @JsonIgnoreProperties({"productReviews", "cartItems", "suppliers"})
+    private Set<Product> productsFromSupplier;
 
     public Supplier()
     {
     }
 
-    public long getSupplierid()
+    public long getSupplierId()
     {
-        return supplierid;
+        return supplierId;
     }
 
-    public void setSupplierid(long supplierid)
+    public void setSupplierId(long supplierId)
     {
-        this.supplierid = supplierid;
+        this.supplierId = supplierId;
     }
 
-    public String getSuppliername()
+    public String getSupplierName()
     {
-        return suppliername;
+        return supplierName;
     }
 
-    public void setSuppliername(String suppliername)
+    public void setSupplierName(String supplierName)
     {
-        this.suppliername = suppliername;
+        this.supplierName = supplierName;
     }
 
-    public String getSupplierphone()
+    public String getSupplierPhone()
     {
-        return supplierphone;
+        return supplierPhone;
     }
 
-    public void setSupplierphone(String supplierphone)
+    public void setSupplierPhone(String supplierPhone)
     {
-        this.supplierphone = supplierphone;
+        this.supplierPhone = supplierPhone;
     }
 
-    public Set<Product> getProductsfromsupplier()
+    public Set<Product> getProductsFromSupplier()
     {
-        return productsfromsupplier;
+        return productsFromSupplier;
     }
 
-    public void setProductsfromsupplier(Set<Product> productsfromsupplier)
+    public void setProductsFromSupplier(Set<Product> productsFromSupplier)
     {
-        this.productsfromsupplier = productsfromsupplier;
+        this.productsFromSupplier = productsFromSupplier;
     }
 }

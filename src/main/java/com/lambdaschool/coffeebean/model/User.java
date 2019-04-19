@@ -15,94 +15,92 @@ import java.util.Set;
 @Entity
 public class User
 {
-    @JsonView({View.ReviewOnly.class})
+    @JsonView({View.Essential.class})
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long userid;
+    private long userId;
 
-    @JsonView({View.ReviewOnly.class})
+    @JsonView({View.Essential.class})
     @Column(length = 250, unique = true)
     private String username;
 
-    //    @JsonIgnore
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     // set default privilege to be user
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String role = "user";
 
-    private String rawPassword;
+    private String currentPassword;
 
     // ==================================================================
 
-    //    @JsonIgnore
-    private String customername;
+    @JsonView({View.Essential.class})
+    private String firstName;
 
-    //    @JsonIgnore
-    private String billingaddress;
+    private String middleName;
 
-    //    @JsonIgnore
-    private String shippingaddress;
+    private String lastName;
 
-    //    @JsonIgnore
-    private String customerphone;
+    private String customerPhone;
 
-    //    @JsonIgnore
+    @JsonView({View.Essential.class})
     @Column(length = 250, unique = true)
     private String email;
 
-    //    @JsonIgnore
-    private String paymentmethod;
-
-    // Used for SendGrid
+    // Used for SendGrid Promo Emails
     private boolean receiveEmails = false;
 
-    // ================ Reviews ================
-    // OneToMany with Reviews
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "reviewer")
-//    @JsonIgnoreProperties({"reviewee", "reviewedProduct"})
-    private Set<Review> reviews;
-
-    // ============ Other Join Tables =========
+    // ================ Relational Tables ================
 
     // *** OneToMany with Order ***
-//    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    @JsonIgnoreProperties({"user", "orderproducts"})
-    private Set<Order> orderhistory;
+    @JsonIgnoreProperties({"user", "itemsInOrder"})
+    private Set<Order> orderHistory;
 
-    //*** ManyToMany with Product - cart - owner of table ***
-//    @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "cart",
-            joinColumns = {@JoinColumn(name = "userid")},
-            inverseJoinColumns = {@JoinColumn(name = "productid")})
-    @JsonIgnoreProperties({"productReviews", "potentialusers", "productorders", "productusers", "suppliers"})
-    private Set<Product> productsincart;
+//    // OneToOne with Cart - Subowner
+    @OneToOne(mappedBy = "user")
+    @JsonIgnoreProperties({"user", "itemsInCart"})
+    private Cart cart;
 
-
-//    //*** ManyToMany with Product - totalorderhistory - owner of table ***
-////    @JsonIgnore
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    @JoinTable(name = "totalorderhistory",
-//            joinColumns = {@JoinColumn(name = "userid")},
-//            inverseJoinColumns = {@JoinColumn(name = "productid")})
-//    @JsonIgnoreProperties({"potentialusers", "productorders", "productusers", "suppliers"})
-//    private Set<Product> totalorderhistory;
+    // OneToMany with Reviews
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "reviewer")
+    @JsonIgnoreProperties({"reviewer", "reviewedProduct"})
+    private Set<Review> reviews;
 
     // ================================================================
+
+
     public User()
     {
     }
 
-    public long getUserid()
+    public String getPassword()
     {
-        return userid;
+        return password;
     }
 
-    public void setUserid(long userid)
+    public void setPassword(String password)
     {
-        this.userid = userid;
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        this.password = passwordEncoder.encode(password);
+    }
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    public List<SimpleGrantedAuthority> getAuthority()
+    {
+        String myRole = "ROLE_" + this.role.toUpperCase();
+        return Collections.singletonList(new SimpleGrantedAuthority(myRole));
+    }
+
+    public long getUserId()
+    {
+        return userId;
+    }
+
+    public void setUserId(long userId)
+    {
+        this.userId = userId;
     }
 
     public String getUsername()
@@ -115,19 +113,6 @@ public class User
         this.username = username;
     }
 
-    public String getPassword()
-    {
-        return password;
-    }
-
-    public void setPassword(String password)
-    {
-//        this.password = password;
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        this.password = passwordEncoder.encode(password);
-
-    }
-
     public String getRole()
     {
         return role;
@@ -138,53 +123,54 @@ public class User
         this.role = role;
     }
 
-    public List<SimpleGrantedAuthority> getAuthority()
+    public String getCurrentPassword()
     {
-        String myRole = "ROLE_" + this.role.toUpperCase();
-        return Collections.singletonList(new SimpleGrantedAuthority(myRole));
+        return currentPassword;
     }
 
-    // ====================================================================
-
-
-    public String getCustomername()
+    public void setCurrentPassword(String currentPassword)
     {
-        return customername;
+        this.currentPassword = currentPassword;
     }
 
-    public void setCustomername(String customername)
+    public String getFirstName()
     {
-        this.customername = customername;
+        return firstName;
     }
 
-    public String getBillingaddress()
+    public void setFirstName(String firstName)
     {
-        return billingaddress;
+        this.firstName = firstName;
     }
 
-    public void setBillingaddress(String billingaddress)
+    public String getMiddleName()
     {
-        this.billingaddress = billingaddress;
+        return middleName;
     }
 
-    public String getShippingaddress()
+    public void setMiddleName(String middleName)
     {
-        return shippingaddress;
+        this.middleName = middleName;
     }
 
-    public void setShippingaddress(String shippingaddress)
+    public String getLastName()
     {
-        this.shippingaddress = shippingaddress;
+        return lastName;
     }
 
-    public String getCustomerphone()
+    public void setLastName(String lastName)
     {
-        return customerphone;
+        this.lastName = lastName;
     }
 
-    public void setCustomerphone(String customerphone)
+    public String getCustomerPhone()
     {
-        this.customerphone = customerphone;
+        return customerPhone;
+    }
+
+    public void setCustomerPhone(String customerPhone)
+    {
+        this.customerPhone = customerPhone;
     }
 
     public String getEmail()
@@ -197,59 +183,6 @@ public class User
         this.email = email;
     }
 
-    public String getPaymentmethod()
-    {
-        return paymentmethod;
-    }
-
-    public void setPaymentmethod(String paymentmethod)
-    {
-        this.paymentmethod = paymentmethod;
-    }
-
-    public Set<Order> getOrderhistory()
-    {
-        return orderhistory;
-    }
-
-    public void setOrderhistory(Set<Order> orderhistory)
-    {
-        this.orderhistory = orderhistory;
-    }
-
-    public Set<Product> getProductsincart()
-    {
-        return productsincart;
-    }
-
-    public void setProductsincart(Set<Product> productsincart)
-    {
-        this.productsincart = productsincart;
-    }
-
-//    public Set<Product> getTotalorderhistory()
-//    {
-//        return totalorderhistory;
-//    }
-//
-//    public void setTotalorderhistory(Set<Product> totalorderhistory)
-//    {
-//        this.totalorderhistory = totalorderhistory;
-//    }
-
-    // for changing password
-    public String getRawPassword()
-    {
-        return rawPassword;
-    }
-
-    public void setRawPassword(String rawPassword)
-    {
-        this.rawPassword = rawPassword;
-    }
-
-    //For SendGrid
-
     public boolean isReceiveEmails()
     {
         return receiveEmails;
@@ -260,7 +193,25 @@ public class User
         this.receiveEmails = receiveEmails;
     }
 
-    // === Review GET/SET ===
+    public Set<Order> getOrderHistory()
+    {
+        return orderHistory;
+    }
+
+    public void setOrderHistory(Set<Order> orderHistory)
+    {
+        this.orderHistory = orderHistory;
+    }
+
+    public Cart getCart()
+    {
+        return cart;
+    }
+
+    public void setCart(Cart cart)
+    {
+        this.cart = cart;
+    }
 
     public Set<Review> getReviews()
     {
