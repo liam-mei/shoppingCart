@@ -1,13 +1,13 @@
 package com.lambdaschool.coffeebean.repository;
 
 import com.lambdaschool.coffeebean.model.Review;
-import com.lambdaschool.coffeebean.model.ReviewItem;
+import com.lambdaschool.coffeebean.CriteriaAPIProducts.ReviewItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface Reviewrepository extends JpaRepository<Review, Long>
+public interface ReviewRepository extends JpaRepository<Review, Long>
 {
     @Query(value =
             "SELECT p.productid, p.productname, p.description, p.image, p.price, " +

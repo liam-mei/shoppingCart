@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import javax.transaction.Transactional;
 import java.util.List;
 
-public interface Productrepository extends JpaRepository<Product, Long>, ProductrepositoryCustom
+public interface ProductRepository extends JpaRepository<Product, Long>, ProductrepositoryCustom
 {
     @Query(value = "SELECT * FROM products LIMIT :start, 10", nativeQuery = true)
     List<Product> get10Products(int start);

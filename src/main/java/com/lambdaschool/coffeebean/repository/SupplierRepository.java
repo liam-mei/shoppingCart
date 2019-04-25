@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
 
-public interface Supplierrepository extends JpaRepository<Supplier, Long>
+public interface SupplierRepository extends JpaRepository<Supplier, Long>
 {
     @Transactional
     @Modifying
