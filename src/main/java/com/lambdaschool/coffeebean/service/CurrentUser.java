@@ -1,4 +1,4 @@
-package com.lambdaschool.coffeebean.model;
+package com.lambdaschool.coffeebean.service;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -8,22 +8,24 @@ import java.util.List;
 
 public class CurrentUser extends User
 {
-    private long currentuserid;
+    private long currentUserId;
     private String customerName, email;
+    private long cartId;
     private List<? extends SimpleGrantedAuthority> authority;
 
-    public CurrentUser(String username, String password, List<? extends SimpleGrantedAuthority> authority, String customerName, long currentuserid, String email)
+    public CurrentUser(String username, String password, List<? extends SimpleGrantedAuthority> authority, String customerName, long currentUserId, String email, long cartId)
     {
         super(username, password, authority);
         this.customerName = customerName;
-        this.currentuserid = currentuserid;
+        this.currentUserId = currentUserId;
         this.authority = authority;
         this.email = email;
+        this.cartId = cartId;
     }
 
-    public long getCurrentuserid()
+    public long getCurrentUserId()
     {
-        return currentuserid;
+        return currentUserId;
     }
 
     public String getCustomerName()
@@ -43,9 +45,9 @@ public class CurrentUser extends User
 
     // ========= Setters ==============
 
-    public void setCurrentuserid(long currentuserid)
+    public void setCurrentUserId(long currentUserId)
     {
-        this.currentuserid = currentuserid;
+        this.currentUserId = currentUserId;
     }
 
     public void setCustomerName(String customerName)
@@ -61,5 +63,15 @@ public class CurrentUser extends User
     public void setAuthority(List<? extends SimpleGrantedAuthority> authority)
     {
         this.authority = authority;
+    }
+
+    public long getCartId()
+    {
+        return cartId;
+    }
+
+    public void setCartId(long cartId)
+    {
+        this.cartId = cartId;
     }
 }

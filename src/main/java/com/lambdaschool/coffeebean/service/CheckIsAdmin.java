@@ -1,8 +1,7 @@
 package com.lambdaschool.coffeebean.service;
 
-import com.lambdaschool.coffeebean.model.CurrentUser;
 import com.lambdaschool.coffeebean.model.User;
-import com.lambdaschool.coffeebean.repository.Userrepository;
+import com.lambdaschool.coffeebean.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -34,7 +33,7 @@ public class CheckIsAdmin
         }};
     }
 
-    protected static Object isUsernameAndEmailUnique(@RequestBody User newuser, Userrepository userrepos)
+    protected static Object isUsernameAndEmailUnique(@RequestBody User newuser, UserRepository userrepos)
     {
         CheckUsernameEmailIsUnique(newuser, userrepos);
         HashMap<String, Object> returnObject = new HashMap<>();
@@ -42,7 +41,7 @@ public class CheckIsAdmin
         return null;
     }
 
-    public static HashMap<String, Object> CheckUsernameEmailIsUnique(@RequestBody User newuser, Userrepository userrepos)
+    public static HashMap<String, Object> CheckUsernameEmailIsUnique(@RequestBody User newuser, UserRepository userrepos)
     {
         String email = newuser.getEmail();
         HashMap<String, Object> returnObject = new HashMap<>();

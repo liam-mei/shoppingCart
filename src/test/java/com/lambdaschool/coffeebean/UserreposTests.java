@@ -1,7 +1,7 @@
 //package com.lambdaschool.coffeebean;
 //
 //import com.lambdaschool.coffeebean.model.User;
-//import com.lambdaschool.coffeebean.repository.Userrepository;
+//import com.lambdaschool.coffeebean.repository.UserRepository;
 //import org.junit.Test;
 //import org.junit.runner.RunWith;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@
 //{
 //
 //    @Autowired
-//    private Userrepository userrepos;
+//    private UserRepository userrepos;
 //
 //    //@Before is an annotation to make sure what's in there is run first
 ////    @Before
@@ -52,7 +52,7 @@
 //    @Test
 //    public void createAndDeleteAUser()
 //    {
-//        long userid = userrepos.save(new User()).getUserid();
+//        long userid = userrepos.save(new User()).getUserId();
 //        User createdUser = userrepos.findById(userid).orElse(null);
 //        assertTrue(createdUser != null);
 //        userrepos.deleteById(userid);

@@ -56,6 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .authorizeRequests()
                 .antMatchers("/swagger-ui.html").permitAll()
                 .antMatchers("/api-docs/**").permitAll()
+                .antMatchers("/cart/**").permitAll()
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
                 .antMatchers(HttpMethod.GET, SHOP_URL).permitAll();
         http.csrf().disable();

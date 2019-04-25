@@ -1,8 +1,8 @@
 package com.lambdaschool.coffeebean.service.impl;
 
-import com.lambdaschool.coffeebean.model.CurrentUser;
+import com.lambdaschool.coffeebean.service.CurrentUser;
 import com.lambdaschool.coffeebean.model.User;
-import com.lambdaschool.coffeebean.repository.Userrepository;
+import com.lambdaschool.coffeebean.repository.UserRepository;
 import com.lambdaschool.coffeebean.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserDetailsService, UserService
 {
 
     @Autowired
-    private Userrepository userrepository;
+    private UserRepository userrepository;
 
 //    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException
 //    {
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserDetailsService, UserService
 
         User u = userrepository.findByUsername(s);
 
-        return new CurrentUser(u.getUsername(), u.getPassword(), u.getAuthority(), u.getCustomername(), u.getUserid(), u.getEmail()
+        return new CurrentUser(u.getUsername(), u.getPassword(), u.getAuthority(), u.getFirstName(), u.getUserId(), u.getEmail(), u.getCart().getCartId()
         );
     }
 
