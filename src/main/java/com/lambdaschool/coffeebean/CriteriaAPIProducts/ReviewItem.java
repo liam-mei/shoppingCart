@@ -1,4 +1,4 @@
-package com.lambdaschool.coffeebean.model;
+package com.lambdaschool.coffeebean.CriteriaAPIProducts;
 
 public interface ReviewItem
 {
