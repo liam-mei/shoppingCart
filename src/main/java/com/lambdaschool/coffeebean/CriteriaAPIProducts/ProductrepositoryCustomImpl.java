@@ -22,7 +22,7 @@ public class ProductrepositoryCustomImpl implements ProductrepositoryCustom
         CriteriaQuery<Product> query = cb.createQuery(Product.class);
         Root<Product> productRoot = query.from(Product.class);
 
-        Path<String> productPath = productRoot.get("productname");
+        Path<String> productPath = productRoot.get("productName");
 
         List<Predicate> predicates = new ArrayList<>();
         for (String word : searchSet)
@@ -46,24 +46,25 @@ public class ProductrepositoryCustomImpl implements ProductrepositoryCustom
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<ProductWithReview> query = cb.createQuery(ProductWithReview.class);
         Root<Product> productRoot = query.from(Product.class);
-        Path<String> productPath = productRoot.get("productname");
+        Path<String> productPath = productRoot.get("productName");
 
         Join<Product, Review> reviewJoin = productRoot.join("productReviews", JoinType.LEFT);
 
         query
                 .select(cb.construct(ProductWithReview.class,
-                      productRoot.get("productid"),
-                      productRoot.get("productname"),
+                      productRoot.get("productId"),
+                      productRoot.get("productName"),
                       productRoot.get("description"),
                       productRoot.get("image"),
                       productRoot.get("price"),
+                      productRoot.get("inventory"),
                       cb.avg(reviewJoin.get("stars")),
                       cb.countDistinct(reviewJoin)))
                 .where(cb.and(searchSet.stream()
                       .map(word -> cb.like(productPath, "%" + word + "%"))
                       .toArray(Predicate[]::new)))
                 .groupBy(
-                      productRoot.get("productid"), productRoot.get("productname"),
+                      productRoot.get("productId"), productRoot.get("productName"),
                       productRoot.get("description"), productRoot.get("image"),
                       productRoot.get("price"))
                 .orderBy(cb.desc(cb.avg(reviewJoin.get("stars"))));

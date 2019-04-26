@@ -2,19 +2,19 @@ package com.lambdaschool.coffeebean.CriteriaAPIProducts;
 
 public interface ReviewItem
 {
-    long getProductid();
+    Long getProduct_id();
 
-    String getProductname();
+    String getProduct_name();
 
     String getDescription();
 
     String getImage();
 
-    double getPrice();
+    Double getPrice();
 
     Double getAvgRating();
 
     Integer getReviewCount();
 
-    Integer getTotalProductCount();
+    Integer getInventory();
 }

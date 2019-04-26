@@ -7,19 +7,22 @@ public class ProductWithReview
     String description;
     String image;
     Double price;
+    Integer inventory;
 
     Double AvgRating;
     Long ReviewCount;
 
-    public ProductWithReview(Long productid, String productname, String description, String image, Double price, Double AvgRating, Long ReviewCount)
+
+    public ProductWithReview(Long productid, String productname, String description, String image, Double price, Integer inventory, Double avgRating, Long reviewCount)
     {
         this.productid = productid;
         this.productname = productname;
         this.description = description;
         this.image = image;
         this.price = price;
-        this.AvgRating = AvgRating;
-        this.ReviewCount = ReviewCount;
+        this.inventory = inventory;
+        AvgRating = avgRating;
+        ReviewCount = reviewCount;
     }
 
     public ProductWithReview()
@@ -74,6 +77,16 @@ public class ProductWithReview
     public void setPrice(Double price)
     {
         this.price = price;
+    }
+
+    public Integer getInventory()
+    {
+        return inventory;
+    }
+
+    public void setInventory(Integer inventory)
+    {
+        this.inventory = inventory;
     }
 
     public Double getAvgRating()

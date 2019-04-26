@@ -1,6 +1,5 @@
 package com.lambdaschool.coffeebean.controller;
 
-import com.lambdaschool.coffeebean.model.Cart;
 import com.lambdaschool.coffeebean.model.CartItem;
 import com.lambdaschool.coffeebean.model.Order;
 import com.lambdaschool.coffeebean.model.Product;
@@ -13,7 +12,10 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Set;
 
 @CrossOrigin
 @Api(value = "Some value... by DKM", description = "Cart Controller by DKM")
@@ -29,7 +31,7 @@ public class CartController extends CheckIsAdmin
 
     @Autowired
     ProductRepository productrepos;
-
+//
     @Autowired
     CartRepository cartrepos;
 
@@ -38,11 +40,11 @@ public class CartController extends CheckIsAdmin
 
     // ==================== CART ==============================
 
-    @GetMapping("/test")
-    public List<Cart> testCartRepo()
-    {
-        return cartrepos.findAll();
-    }
+//    @GetMapping("/test")
+//    public List<Cart> testCartRepo()
+//    {
+//        return cartrepos.findAll();
+//    }
 
     @GetMapping("/{userId}")
     public Object getCartItemsInCartById(@PathVariable long userid)
