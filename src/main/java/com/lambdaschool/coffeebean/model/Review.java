@@ -24,7 +24,8 @@ public class Review
     @JoinColumn(name = "userId")
     @JsonIgnoreProperties({
             "reviews", "orderHistory", "cart", "currentPassword",
-            "middleName", "lastName", "customerPhone", "receiveEmails"})
+            "middleName", "lastName", "customerPhone", "receiveEmails",
+            "addresses"})
     private User reviewer;
 
     // ManyToOne with Product - Owner

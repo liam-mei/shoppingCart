@@ -1,11 +1,11 @@
 ALTER TABLE products ADD FULLTEXT(product_name);
 
-INSERT INTO orders (order_id, payment_details, ship_date_time, shipped_status, user_id, order_date_time) VALUES (1, 'Mastercard1', '2019-01-20 20:50:50', true, 3, '2019-01-20 20:50:50');
-INSERT INTO orders (order_id, payment_details, ship_date_time, shipped_status, user_id, order_date_time) VALUES (2, 'Mastercard2', '2019-01-20 20:50:50', false, 3, '2019-01-20 20:50:50');
-INSERT INTO orders (order_id, payment_details, ship_date_time, shipped_status, user_id) VALUES (3, 'Mastercard3', '2019-01-20 20:50:50', true, 4);
-INSERT INTO orders (order_id, payment_details, ship_date_time, shipped_status, user_id) VALUES (4, 'Mastercard4', '2019-01-20 20:50:50', false, 3);
-INSERT INTO orders (order_id, payment_details, ship_date_time, shipped_status, user_id) VALUES (5, 'Mastercard5', '2019-01-20 20:50:50', true, 3);
-INSERT INTO orders (order_id, payment_details, ship_date_time, shipped_status, user_id) VALUES (6, 'Mastercard6', '2019-01-20 20:50:50', false, 4);
+INSERT INTO orders (order_id, billing_address_id, shipping_address_id, payment_details, ship_date_time, shipped_status, user_id, order_date_time) VALUES (1, 1, 2, 'Mastercard1', '2019-01-20 20:50:50', true, 3, '2019-01-20 20:50:50');
+INSERT INTO orders (order_id, billing_address_id, shipping_address_id, payment_details, ship_date_time, shipped_status, user_id, order_date_time) VALUES (2, 1, 2, 'Mastercard2', '2019-01-20 20:50:50', false, 3, '2019-01-20 20:50:50');
+INSERT INTO orders (order_id, billing_address_id, shipping_address_id, payment_details, ship_date_time, shipped_status, user_id) VALUES (3, 1, 3, 'Mastercard3', '2019-01-20 20:50:50', true, 3);
+INSERT INTO orders (order_id, billing_address_id, shipping_address_id, payment_details, ship_date_time, shipped_status, user_id) VALUES (4, 4, 5, 'Mastercard4', '2019-01-20 20:50:50', false, 4);
+INSERT INTO orders (order_id, billing_address_id, shipping_address_id, payment_details, ship_date_time, shipped_status, user_id) VALUES (5, 4, 5, 'Mastercard5', '2019-01-20 20:50:50', true, 4);
+INSERT INTO orders (order_id, billing_address_id, shipping_address_id, payment_details, ship_date_time, shipped_status, user_id) VALUES (6, 4, 6, 'Mastercard6', '2019-01-20 20:50:50', false, 4);
 
 INSERT INTO order_items (order_item_id, quantity, order_id, product_id) VALUES (1, 5, 1, 1);
 INSERT INTO order_items (order_item_id, quantity, order_id, product_id) VALUES (2, 5, 1, 2);
@@ -85,3 +85,10 @@ INSERT INTO reviews (review_id, headline, review_body, stars, product_id, user_i
 INSERT INTO reviews (review_id, headline, review_body, stars, product_id, user_id) VALUES ('14', 'best coffee ever', 'omg I\'m so awake', '1', '4', '2');
 INSERT INTO reviews (review_id, headline, review_body, stars, product_id, user_id) VALUES ('15', 'best coffee ever', 'omg I\'m so awake', '1', '4', '3');
 INSERT INTO reviews (review_id, headline, review_body, stars, product_id, user_id) VALUES ('16', 'best coffee ever', 'omg I\'m so awake', '4', '4', '4');
+
+INSERT INTO addresses (address_id, user_id, street, city, state, zipcode, display) VALUES (1, 3, '1 Main St', 'Chicago', 'IL', '60654', 1);
+INSERT INTO addresses (address_id, user_id, street, city, state, zipcode, display) VALUES (2, 3, '2 Main St', 'Chicago', 'IL', '60654', 1);
+INSERT INTO addresses (address_id, user_id, street, city, state, zipcode, display) VALUES (3, 3, '3 Main St', 'Chicago', 'IL', '60654', 1);
+INSERT INTO addresses (address_id, user_id, street, city, state, zipcode, display) VALUES (4, 4, '4 Main St', 'Chicago', 'IL', '60654', 1);
+INSERT INTO addresses (address_id, user_id, street, city, state, zipcode, display) VALUES (5, 4, '5 Main St', 'Chicago', 'IL', '60654', 1);
+INSERT INTO addresses (address_id, user_id, street, city, state, zipcode, display) VALUES (6, 4, '6 Main St', 'Chicago', 'IL', '60654', 1);

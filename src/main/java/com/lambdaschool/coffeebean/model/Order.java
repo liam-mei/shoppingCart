@@ -30,13 +30,23 @@ public class Order
     @JoinColumn(name = "userId")
     @JsonIgnoreProperties({
             "reviews", "orderHistory", "cart", "currentPassword",
-            "middleName", "lastName", "customerPhone", "receiveEmails"})
+            "middleName", "lastName", "customerPhone", "receiveEmails",
+            "addresses"})
     private User user;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
     @JsonIgnoreProperties({"order"})
     private Set<OrderItem> itemsInOrder;
 
+    @ManyToOne
+    @JoinColumn(name = "shippingAddressId")
+    @JsonIgnoreProperties({"user", "ordersUsingThisAsShipping", "ordersUsingThisAsBilling"})
+    private Address shippingAddress;
+
+    @ManyToOne
+    @JoinColumn(name = "billingAddressId")
+    @JsonIgnoreProperties({"user", "ordersUsingThisAsShipping", "ordersUsingThisAsBilling"})
+    private Address billingAddress;
 
     public Order()
     {
@@ -111,5 +121,25 @@ public class Order
     public void setItemsInOrder(Set<OrderItem> itemsInOrder)
     {
         this.itemsInOrder = itemsInOrder;
+    }
+
+    public Address getShippingAddress()
+    {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(Address shippingAddress)
+    {
+        this.shippingAddress = shippingAddress;
+    }
+
+    public Address getBillingAddress()
+    {
+        return billingAddress;
+    }
+
+    public void setBillingAddress(Address billingAddress)
+    {
+        this.billingAddress = billingAddress;
     }
 }

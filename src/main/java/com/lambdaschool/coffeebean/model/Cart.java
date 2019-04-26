@@ -18,7 +18,8 @@ public class Cart
     @JoinColumn(name = "userId")
     @JsonIgnoreProperties({
             "reviews", "orderHistory", "cart", "currentPassword",
-            "middleName", "lastName", "customerPhone", "receiveEmails"})
+            "middleName", "lastName", "customerPhone", "receiveEmails",
+            "addresses"})
     private User user;
 
     // OneToMany with CartItem - owner

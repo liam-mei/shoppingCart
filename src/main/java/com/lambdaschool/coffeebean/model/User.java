@@ -55,18 +55,26 @@ public class User
 
     // *** OneToMany with Order ***
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    @JsonIgnoreProperties({"user", "itemsInOrder"})
+    @JsonIgnoreProperties({"user", "itemsInOrder", "shippingAddress", "billingAddress",})
     private Set<Order> orderHistory;
 
 //    // OneToOne with Cart - Subowner
     @OneToOne(mappedBy = "user")
-    @JsonIgnoreProperties({"user", "itemsInCart"})
+    @JsonIgnoreProperties({"user"})
     private Cart cart;
 
     // OneToMany with Reviews
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "reviewer")
     @JsonIgnoreProperties({"reviewer", "reviewedProduct"})
     private Set<Review> reviews;
+
+    // OneToMany with Address
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @JsonIgnoreProperties({
+            "reviews", "orderHistory", "cart", "currentPassword",
+            "middleName", "lastName", "customerPhone", "receiveEmails",
+            "user", "ordersUsingThisAsShipping", "ordersUsingThisAsBilling"})
+    private Set<Address> addresses;
 
     // ================================================================
 
@@ -221,5 +229,15 @@ public class User
     public void setReviews(Set<Review> reviews)
     {
         this.reviews = reviews;
+    }
+
+    public Set<Address> getAddresses()
+    {
+        return addresses;
+    }
+
+    public void setAddresses(Set<Address> addresses)
+    {
+        this.addresses = addresses;
     }
 }

@@ -24,7 +24,7 @@ public class OrderItem
     // ManyToOne with Order
     @ManyToOne
     @JoinColumn(name = "orderId")
-    @JsonIgnoreProperties({"user", "itemsInOrder"})
+    @JsonIgnoreProperties({"user", "itemsInOrder", "shippingAddress", "billingAddress"})
     private Order order;
 
     public OrderItem()
