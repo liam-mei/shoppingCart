@@ -2,51 +2,51 @@ package com.lambdaschool.coffeebean.CriteriaAPIProducts;
 
 public class ProductWithReview
 {
-    Long productid;
-    String productname;
+    Long productId;
+    String productName;
     String description;
     String image;
     Double price;
     Integer inventory;
 
-    Double AvgRating;
-    Long ReviewCount;
+    Double avgRating;
+    Long reviewCount;
 
 
-    public ProductWithReview(Long productid, String productname, String description, String image, Double price, Integer inventory, Double avgRating, Long reviewCount)
+    public ProductWithReview(Long productId, String productName, String description, String image, Double price, Integer inventory, Double avgRating, Long reviewCount)
     {
-        this.productid = productid;
-        this.productname = productname;
+        this.productId = productId;
+        this.productName = productName;
         this.description = description;
         this.image = image;
         this.price = price;
         this.inventory = inventory;
-        AvgRating = avgRating;
-        ReviewCount = reviewCount;
+        this.avgRating = avgRating;
+        this.reviewCount = reviewCount;
     }
 
     public ProductWithReview()
     {
     }
 
-    public Long getProductid()
+    public Long getProductId()
     {
-        return productid;
+        return productId;
     }
 
-    public void setProductid(Long productid)
+    public void setProductId(Long productId)
     {
-        this.productid = productid;
+        this.productId = productId;
     }
 
-    public String getProductname()
+    public String getProductName()
     {
-        return productname;
+        return productName;
     }
 
-    public void setProductname(String productname)
+    public void setProductName(String productName)
     {
-        this.productname = productname;
+        this.productName = productName;
     }
 
     public String getDescription()
@@ -91,21 +91,21 @@ public class ProductWithReview
 
     public Double getAvgRating()
     {
-        return AvgRating;
+        return avgRating;
     }
 
     public void setAvgRating(Double avgRating)
     {
-        AvgRating = avgRating;
+        this.avgRating = avgRating;
     }
 
     public Long getReviewCount()
     {
-        return ReviewCount;
+        return reviewCount;
     }
 
     public void setReviewCount(Long reviewCount)
     {
-        ReviewCount = reviewCount;
+        this.reviewCount = reviewCount;
     }
 }

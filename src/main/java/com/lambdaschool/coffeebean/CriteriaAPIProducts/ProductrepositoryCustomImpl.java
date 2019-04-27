@@ -41,7 +41,7 @@ public class ProductrepositoryCustomImpl implements ProductrepositoryCustom
     }
 
     @Override
-    public List<ProductWithReview> get10ProductsWithReviewsData(Set<String> searchSet, int start)
+    public List<ProductWithReview> searchFor10ProductsWithReviewsDataBySearchString(Set<String> searchSet, int start, String ascending, String orderBy)
     {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<ProductWithReview> query = cb.createQuery(ProductWithReview.class);
@@ -50,24 +50,147 @@ public class ProductrepositoryCustomImpl implements ProductrepositoryCustom
 
         Join<Product, Review> reviewJoin = productRoot.join("productReviews", JoinType.LEFT);
 
-        query
-                .select(cb.construct(ProductWithReview.class,
-                      productRoot.get("productId"),
-                      productRoot.get("productName"),
-                      productRoot.get("description"),
-                      productRoot.get("image"),
-                      productRoot.get("price"),
-                      productRoot.get("inventory"),
-                      cb.avg(reviewJoin.get("stars")),
-                      cb.countDistinct(reviewJoin)))
-                .where(cb.and(searchSet.stream()
-                      .map(word -> cb.like(productPath, "%" + word + "%"))
-                      .toArray(Predicate[]::new)))
-                .groupBy(
-                      productRoot.get("productId"), productRoot.get("productName"),
-                      productRoot.get("description"), productRoot.get("image"),
-                      productRoot.get("price"))
+        if (orderBy.equalsIgnoreCase("avgRating"))
+        {
+            query
+                    .select(cb.construct(ProductWithReview.class,
+                            productRoot.get("productId"),
+                            productRoot.get("productName"),
+                            productRoot.get("description"),
+                            productRoot.get("image"),
+                            productRoot.get("price"),
+                            productRoot.get("inventory"),
+                            cb.avg(reviewJoin.get("stars")),
+                            cb.countDistinct(reviewJoin)))
+                    .where(cb.and(searchSet.stream()
+                            .map(word -> cb.like(productPath, "%" + word + "%"))
+                            .toArray(Predicate[]::new)))
+                    .groupBy(
+                            productRoot.get("productId"), productRoot.get("productName"),
+                            productRoot.get("description"), productRoot.get("image"),
+                            productRoot.get("price"))
                 .orderBy(cb.desc(cb.avg(reviewJoin.get("stars"))));
+//                    .orderBy(cb.asc(productRoot.get(orderBy)));
+        }
+        else if (ascending.equalsIgnoreCase("ascending"))
+        {
+            query
+                    .select(cb.construct(ProductWithReview.class,
+                            productRoot.get("productId"),
+                            productRoot.get("productName"),
+                            productRoot.get("description"),
+                            productRoot.get("image"),
+                            productRoot.get("price"),
+                            productRoot.get("inventory"),
+                            cb.avg(reviewJoin.get("stars")),
+                            cb.countDistinct(reviewJoin)))
+                    .where(cb.and(searchSet.stream()
+                            .map(word -> cb.like(productPath, "%" + word + "%"))
+                            .toArray(Predicate[]::new)))
+                    .groupBy(
+                            productRoot.get("productId"), productRoot.get("productName"),
+                            productRoot.get("description"), productRoot.get("image"),
+                            productRoot.get("price"))
+//                .orderBy(cb.desc(cb.avg(reviewJoin.get("stars"))));
+                    .orderBy(cb.asc(productRoot.get(orderBy)));
+        }
+        else
+        {
+            query
+                    .select(cb.construct(ProductWithReview.class,
+                            productRoot.get("productId"),
+                            productRoot.get("productName"),
+                            productRoot.get("description"),
+                            productRoot.get("image"),
+                            productRoot.get("price"),
+                            productRoot.get("inventory"),
+                            cb.avg(reviewJoin.get("stars")),
+                            cb.countDistinct(reviewJoin)))
+                    .where(cb.and(searchSet.stream()
+                            .map(word -> cb.like(productPath, "%" + word + "%"))
+                            .toArray(Predicate[]::new)))
+                    .groupBy(
+                            productRoot.get("productId"), productRoot.get("productName"),
+                            productRoot.get("description"), productRoot.get("image"),
+                            productRoot.get("price"))
+//                .orderBy(cb.desc(cb.avg(reviewJoin.get("stars"))));
+                    .orderBy(cb.desc(productRoot.get(orderBy)));
+
+        }
+
+
+        List<ProductWithReview> resultList = entityManager.createQuery(query)
+                .setFirstResult(start)
+                .setMaxResults(10)
+                .getResultList();
+
+        return resultList;
+    }
+
+    @Override
+    public List<ProductWithReview> get10ReviewItemsByPage(int start, String ascending, String orderBy)
+    {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<ProductWithReview> query = cb.createQuery(ProductWithReview.class);
+        Root<Product> productRoot = query.from(Product.class);
+        Path<String> productPath = productRoot.get("productName");
+
+        Join<Product, Review> reviewJoin = productRoot.join("productReviews", JoinType.LEFT);
+
+        if (orderBy.equalsIgnoreCase("avgRating"))
+        {
+            query
+                    .select(cb.construct(ProductWithReview.class,
+                            productRoot.get("productId"),
+                            productRoot.get("productName"),
+                            productRoot.get("description"),
+                            productRoot.get("image"),
+                            productRoot.get("price"),
+                            productRoot.get("inventory"),
+                            cb.avg(reviewJoin.get("stars")),
+                            cb.countDistinct(reviewJoin)))
+                    .groupBy(
+                            productRoot.get("productId"), productRoot.get("productName"),
+                            productRoot.get("description"), productRoot.get("image"),
+                            productRoot.get("price"))
+                    .orderBy(cb.desc(cb.avg(reviewJoin.get("stars"))));
+        }
+        else if (ascending.equalsIgnoreCase("ascending"))
+        {
+            query
+                    .select(cb.construct(ProductWithReview.class,
+                            productRoot.get("productId"),
+                            productRoot.get("productName"),
+                            productRoot.get("description"),
+                            productRoot.get("image"),
+                            productRoot.get("price"),
+                            productRoot.get("inventory"),
+                            cb.avg(reviewJoin.get("stars")),
+                            cb.countDistinct(reviewJoin)))
+                    .groupBy(
+                            productRoot.get("productId"), productRoot.get("productName"),
+                            productRoot.get("description"), productRoot.get("image"),
+                            productRoot.get("price"))
+                    .orderBy(cb.asc(productRoot.get(orderBy)));
+        }
+        else
+        {
+            query
+                    .select(cb.construct(ProductWithReview.class,
+                            productRoot.get("productId"),
+                            productRoot.get("productName"),
+                            productRoot.get("description"),
+                            productRoot.get("image"),
+                            productRoot.get("price"),
+                            productRoot.get("inventory"),
+                            cb.avg(reviewJoin.get("stars")),
+                            cb.countDistinct(reviewJoin)))
+                    .groupBy(
+                            productRoot.get("productId"), productRoot.get("productName"),
+                            productRoot.get("description"), productRoot.get("image"),
+                            productRoot.get("price"))
+                    .orderBy(cb.desc(productRoot.get(orderBy)));
+        }
 
         List<ProductWithReview> resultList = entityManager.createQuery(query)
                 .setFirstResult(start)

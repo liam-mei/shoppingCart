@@ -9,6 +9,8 @@ public interface ProductrepositoryCustom
 {
     List<Product> dynamicQueryWithStringsLike(Set<String> searchArray, int start);
 
-    List<ProductWithReview> get10ProductsWithReviewsData(Set<String> searchSet, int start);
+    List<ProductWithReview> searchFor10ProductsWithReviewsDataBySearchString(Set<String> searchSet, int start, String ascending, String orderBy);
+
+    List<ProductWithReview> get10ReviewItemsByPage(int start, String ascending, String orderBy);
 
 }

@@ -2,9 +2,9 @@ package com.lambdaschool.coffeebean.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.lambdaschool.coffeebean.CriteriaAPIProducts.ProductWithReview;
+import com.lambdaschool.coffeebean.CriteriaAPIProducts.ReviewItem;
 import com.lambdaschool.coffeebean.model.Product;
 import com.lambdaschool.coffeebean.model.Review;
-import com.lambdaschool.coffeebean.CriteriaAPIProducts.ReviewItem;
 import com.lambdaschool.coffeebean.repository.ProductRepository;
 import com.lambdaschool.coffeebean.repository.ReviewRepository;
 import io.swagger.annotations.Api;
@@ -85,22 +85,28 @@ public class ShopController
     }
 
 
-    @GetMapping("/reviewitems/{page}")
-    public List<ReviewItem> get10ReviewItemsByPage(@PathVariable int page)
+    @GetMapping("/reviewitems/page/{page}/orderby/{orderBy}/ascdesc/{ascending}")
+    public List<ProductWithReview> get10ReviewItemsByPage(@PathVariable int page,
+                                                   @PathVariable String orderBy,
+                                                   @PathVariable String ascending)
     {
         int start = (page - 1) * 10;
 
-        return reviewrepos.get10ReviewItemsByPage(start);
+        return productrepos.get10ReviewItemsByPage(start, ascending, orderBy);
     }
 
-    @GetMapping("/search/productwithreview/{searchString}/page/{page}")
-    public List<ProductWithReview> get10ProductsWithReviewsDataBySearchString(@PathVariable String searchString, @PathVariable int page)
+    @GetMapping("/search/productwithreview/{searchString}/page/{page}/orderby/{orderBy}/ascdesc/{ascending}")
+    public List<ProductWithReview> searchFor10ProductsWithReviewsDataBySearchString(
+            @PathVariable String searchString,
+            @PathVariable int page,
+            @PathVariable String orderBy,
+            @PathVariable String ascending)
     {
         String[] searchArray = searchString.split(" ");
         Set<String> searchSet = new HashSet<>(Arrays.asList(searchArray));
 
         int start = (page - 1) * 10;
 
-        return productrepos.get10ProductsWithReviewsData(searchSet, start);
+        return productrepos.searchFor10ProductsWithReviewsDataBySearchString(searchSet, start, ascending, orderBy);
     }
 }
