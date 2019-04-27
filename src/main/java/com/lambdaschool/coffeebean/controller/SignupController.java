@@ -4,7 +4,6 @@ import com.lambdaschool.coffeebean.SendGrid.EmailModel;
 import com.lambdaschool.coffeebean.SendGrid.SendGridService2;
 import com.lambdaschool.coffeebean.model.Cart;
 import com.lambdaschool.coffeebean.model.User;
-import com.lambdaschool.coffeebean.repository.CartRepository;
 import com.lambdaschool.coffeebean.repository.UserRepository;
 import com.lambdaschool.coffeebean.service.CheckIsAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +26,6 @@ public class SignupController extends CheckIsAdmin
     private UserRepository userrepos;
 
     @Autowired
-    private CartRepository cartrepos;
-
-    @Autowired
     SendGridService2 emailService;
 
     @PostMapping("")
@@ -44,7 +40,8 @@ public class SignupController extends CheckIsAdmin
         emailService.sendEmail(welcomeEmail);
 
         newuser.setRole("user");
-        newuser.setCart(cartrepos.save(new Cart()));
+
+        newuser.setCart(new Cart());
         return userrepos.save(newuser);
     }
 }
