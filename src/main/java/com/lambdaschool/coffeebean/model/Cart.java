@@ -13,9 +13,8 @@ public class Cart
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long cartId;
 
-//    // OneToOne with User - subowner
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "userId")
+//    // OneToOne with User
+    @OneToOne(mappedBy = "cart")
     @JsonIgnoreProperties({
             "reviews", "orderHistory", "cart", "currentPassword",
             "middleName", "lastName", "customerPhone", "receiveEmails",

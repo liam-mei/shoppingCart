@@ -58,8 +58,9 @@ public class User
     @JsonIgnoreProperties({"user", "itemsInOrder", "shippingAddress", "billingAddress",})
     private Set<Order> orderHistory;
 
-//    // OneToOne with Cart - Subowner
-    @OneToOne(mappedBy = "user")
+//    // OneToOne with Cart
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "cartId")
     @JsonIgnoreProperties({"user"})
     private Cart cart;
 
@@ -76,7 +77,7 @@ public class User
             "user", "ordersUsingThisAsShipping", "ordersUsingThisAsBilling"})
     private Set<Address> addresses;
 
-    // ================================================================
+    // ========================================================
 
 
     public User()
