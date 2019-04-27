@@ -10,7 +10,7 @@ import java.util.List;
 public interface ReviewRepository extends JpaRepository<Review, Long>
 {
     @Query(value =
-            "SELECT p.product_id, p.product_name, p.description, p.image, p.price, " +
+            "SELECT p.product_id AS productId, p.product_name as productName, p.description, p.image, p.price, " +
                     "AVG(r.stars) AS avgRating, COUNT(r.product_id) AS reviewCount, p.inventory " +
                     "FROM products p " +
                     "LEFT OUTER JOIN reviews r ON p.product_id=r.product_id " +
@@ -19,7 +19,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long>
     List<ReviewItem> getAllReviewItems();
 
     @Query(value =
-            "SELECT p.product_id, p.product_name, p.description, p.image, p.price, AVG(r.stars) AS avgRating, " +
+            "SELECT p.product_id AS productId, p.product_name as productName, p.description, p.image, p.price, AVG(r.stars) AS avgRating, " +
                     "COUNT(r.product_id) AS reviewCount, p.inventory " +
                     "FROM products p " +
                     "LEFT OUTER JOIN reviews r ON p.product_id=r.product_id " +
