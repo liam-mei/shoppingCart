@@ -1,6 +1,8 @@
 package com.lambdaschool.coffeebean.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.lambdaschool.coffeebean.controller.View;
 
 import javax.persistence.*;
 
@@ -9,17 +11,22 @@ import javax.persistence.*;
 @Table(name = "reviews")
 public class Review
 {
+    @JsonView(View.Essential.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long reviewId;
 
+    @JsonView(View.Essential.class)
     private String headline;
 
+    @JsonView(View.Essential.class)
     private String reviewBody;
 
+    @JsonView(View.Essential.class)
     Integer stars;
 
     // ManyToOne with User - Owner
+    @JsonView(View.Essential.class)
     @ManyToOne
     @JoinColumn(name = "userId")
     @JsonIgnoreProperties({
@@ -29,6 +36,7 @@ public class Review
     private User reviewer;
 
     // ManyToOne with Product - Owner
+    @JsonView(View.Essential.class)
     @ManyToOne
     @JoinColumn(name = "productId")
     @JsonIgnoreProperties({"productReviews", "cartItems", "suppliers"})

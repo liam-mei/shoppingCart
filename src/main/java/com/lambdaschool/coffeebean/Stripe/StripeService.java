@@ -1,9 +1,8 @@
 package com.lambdaschool.coffeebean.Stripe;
 
 import com.stripe.Stripe;
-import com.stripe.exception.*;
+import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -14,13 +13,13 @@ import java.util.Map;
 public class StripeService
 {
 
-    @Value("sk_test_iXtYHR0NqelPYcrdrLB5Sj8O")
-    String secretKey;
+//    @Value("sk_test_iXtYHR0NqelPYcrdrLB5Sj8O")
+//    String secretKey;
 
     @PostConstruct
     public void init()
     {
-        Stripe.apiKey = secretKey;
+        Stripe.apiKey = "sk_test_iXtYHR0NqelPYcrdrLB5Sj8O";
     }
 
     public Charge charge(ChargeRequest chargeRequest)

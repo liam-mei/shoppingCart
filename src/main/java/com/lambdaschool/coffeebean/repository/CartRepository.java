@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface CartRepository extends JpaRepository<Cart, Long>
 {
-    @Query(value = "SELECT * FROM carts WHERE userid = :userid", nativeQuery = true)
-    Cart getCartByUserId(Long userid);
+    @Query(value = "SELECT * FROM carts WHERE cart_id = :cartId", nativeQuery = true)
+    Cart getCartByCartId(Long cartId);
 }

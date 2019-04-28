@@ -1,5 +1,6 @@
 package com.lambdaschool.coffeebean.controller;
 
+import com.lambdaschool.coffeebean.model.Cart;
 import com.lambdaschool.coffeebean.model.CartItem;
 import com.lambdaschool.coffeebean.model.Order;
 import com.lambdaschool.coffeebean.model.Product;
@@ -12,10 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 
 @CrossOrigin
 @Api(value = "Some value... by DKM", description = "Cart Controller by DKM")
@@ -40,27 +38,27 @@ public class CartController extends CheckIsAdmin
 
     // ==================== CART ==============================
 
-//    @GetMapping("/test")
-//    public List<Cart> testCartRepo()
-//    {
-//        return cartrepos.findAll();
-//    }
+    @GetMapping("/test")
+    public List<Cart> testCartRepo()
+    {
+        return cartrepos.findAll();
+    }
 
     @GetMapping("/{userId}")
-    public Object getCartItemsInCartById(@PathVariable long userid)
+    public Object getCartItemsInCartById(@PathVariable long userId)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long currentUserId = currentuser.getCurrentUserId();
 
         boolean isAdmin = testIsAdmin(currentuser);
 
-        if (currentUserId == userid || isAdmin)
+        if (currentUserId == userId || isAdmin)
         {
-            return cartrepos.getCartByUserId(userid);
+            return cartrepos.getCartByCartId(currentuser.getCartId());
 
         } else
         {
-            return doesUsernameMatch(currentUserId, userid, false);
+            return doesUsernameMatch(currentUserId, userId, false);
         }
     }
 
@@ -206,12 +204,12 @@ public class CartController extends CheckIsAdmin
 //    // 3. save order with the limited data
 //    // 4. return actual order from database with correct information
     @PostMapping("/buy")
-    public Object buyItemsInCart(@RequestBody Order newOrder)
+    public Object buyItemsInCart()
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long currentUserId = currentuser.getCurrentUserId();
 
-        Set<CartItem> currentCartItems = cartrepos.getCartByUserId(currentUserId).getItemsInCart();
+        Set<CartItem> currentCartItems = cartrepos.getCartByCartId(currentUserId).getItemsInCart();
 
         ArrayList<Product> productsWithConstraint = new ArrayList<>();
 
@@ -231,6 +229,7 @@ public class CartController extends CheckIsAdmin
             return returnObject;
         }
 
+        Order newOrder = new Order();
         newOrder.setUser(userrepos.findById(currentUserId).get());
         Order currentOrder = orderrepos.save(newOrder);
         long currentOrderId = currentOrder.getOrderId();
@@ -241,7 +240,7 @@ public class CartController extends CheckIsAdmin
             productrepos.removeOrderedQtyFromInventory(item.getProduct().getProductId(), item.getQuantity());
         });
 
-        cartitemrepos.deleteAllItemsFromCart(currentUserId);
+        cartitemrepos.deleteAllItemsFromCart(currentuser.getCartId());
 
         return orderrepos.findById(currentOrderId).get();
     }

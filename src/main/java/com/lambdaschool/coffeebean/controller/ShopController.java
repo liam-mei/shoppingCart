@@ -32,7 +32,7 @@ public class ShopController
     @Autowired
     ReviewRepository reviewrepos;
 
-    @JsonView(View.UserOnly.class)
+    @JsonView(View.Essential.class)
     @ApiOperation(value = "find all products - DKM", response = Product.class)
     @GetMapping("")
     public List<Product> getAllProducts()
@@ -40,7 +40,7 @@ public class ShopController
         return productrepos.findAll();
     }
 
-    @JsonView(View.UserOnly.class)
+    @JsonView(View.Essential.class)
     @GetMapping("/{page}")
     public List<Product> get10Products(@PathVariable int page)
     {
@@ -48,7 +48,7 @@ public class ShopController
         return productrepos.get10Products(start);
     }
 
-    @JsonView(View.UserOnly.class)
+    @JsonView(View.Essential.class)
     @GetMapping("/naturalsearch/{searchString}/page/{page}")
     public List<Product> naturalSearchForProductByName(@PathVariable String searchString, @PathVariable int page)
     {
@@ -57,7 +57,7 @@ public class ShopController
     }
 
 
-    @JsonView(View.UserOnly.class)
+    @JsonView(View.Essential.class)
     @GetMapping("/criteria/{searchString}/page/{page}")
     public List<Product> dynamicQueryWithStringsLike(@PathVariable String searchString, @PathVariable int page)
     {

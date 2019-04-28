@@ -9,7 +9,7 @@ import java.io.IOException;
 @Service
 public class SendGridService2
 {
-    @Value("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")
+    @Value("${TEST_SENDGRID}")
     String secretKey;
 
     public void sendEmail (EmailModel email) throws IOException {
