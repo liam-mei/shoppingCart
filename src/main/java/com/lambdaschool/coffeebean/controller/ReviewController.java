@@ -1,14 +1,18 @@
 package com.lambdaschool.coffeebean.controller;
 
+import com.lambdaschool.coffeebean.exceptions.ForbiddenException;
 import com.lambdaschool.coffeebean.model.Review;
 import com.lambdaschool.coffeebean.repository.ReviewRepository;
+import com.lambdaschool.coffeebean.repository.UserRepository;
+import com.lambdaschool.coffeebean.service.CurrentUser;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Api(value = "Some value... by DKM", description = "Review Controller by DKM")
 @RestController
@@ -17,6 +21,9 @@ public class ReviewController
 {
     @Autowired
     ReviewRepository reviewrepos;
+
+    @Autowired
+    UserRepository userrepos;
 
     @GetMapping
     public List<Review> getAllReviews()
@@ -33,42 +40,54 @@ public class ReviewController
     @PostMapping
     public Review postNewReview(@RequestBody Review newReview)
     {
+        CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long currentUserId = currentuser.getCurrentUserId();
+
+        newReview.setReviewId(null);
+        newReview.setReviewer(userrepos.findById(currentUserId).get());
         return reviewrepos.save(newReview);
     }
 
     @PutMapping
-    public Review updateReview(@RequestBody Review updatedReview)
+    public Object updateReview(@RequestBody Review updatedReview)
     {
-        Optional<Review> foundReview = reviewrepos.findById(updatedReview.getReviewId());
+        CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long currentUserId = currentuser.getCurrentUserId();
 
-        if (foundReview.isPresent())
+        Review foundReview = reviewrepos.getReviewByUserIdAndReviewId(currentUserId, updatedReview.getReviewId());
+
+        if (foundReview != null)
         {
-            if (updatedReview.getHeadline() == null) updatedReview.setHeadline(foundReview.get().getHeadline());
-            if (updatedReview.getReviewBody() == null) updatedReview.setReviewBody(foundReview.get().getReviewBody());
-            if (updatedReview.getReviewedProduct() == null) updatedReview.setReviewedProduct(foundReview.get().getReviewedProduct());
-            if (updatedReview.getReviewer() == null) updatedReview.setReviewer(foundReview.get().getReviewer());
-            if (updatedReview.getStars() == null) updatedReview.setStars(foundReview.get().getStars());
+            if (updatedReview.getReviewedProduct() == null) updatedReview.setReviewedProduct(foundReview.getReviewedProduct());
+            if (updatedReview.getReviewBody() == null) updatedReview.setReviewBody(foundReview.getReviewBody());
+            if (updatedReview.getHeadline() == null) updatedReview.setHeadline(foundReview.getHeadline());
+            if (updatedReview.getStars() == null) updatedReview.setStars(foundReview.getStars());
 
+            updatedReview.setReviewer(foundReview.getReviewer());
             return reviewrepos.save(updatedReview);
         }
         else
         {
-            return null;
+            throw new ForbiddenException(HttpStatus.FORBIDDEN, "review being modified does not belong to current user");
         }
     }
 
     @DeleteMapping("/{reviewId}")
     public Review deleteReviewById(@PathVariable long reviewId)
     {
-        Optional<Review> foundReview = reviewrepos.findById(reviewId);
-        if (foundReview.isPresent())
+        CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long currentUserId = currentuser.getCurrentUserId();
+
+        Review foundReview = reviewrepos.getReviewByUserIdAndReviewId(currentUserId, reviewId);
+
+        if (foundReview != null)
         {
             reviewrepos.deleteById(reviewId);
-            return foundReview.get();
+            return foundReview;
         }
         else
         {
-            return null;
+            throw new ForbiddenException(HttpStatus.FORBIDDEN, "review being deleted does not belong to current user");
         }
     }
 }
