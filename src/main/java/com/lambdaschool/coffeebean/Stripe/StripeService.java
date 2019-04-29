@@ -19,7 +19,7 @@ public class StripeService
     @PostConstruct
     public void init()
     {
-        Stripe.apiKey = "sk_test_iXtYHR0NqelPYcrdrLB5Sj8O";
+        Stripe.apiKey = System.getenv().get("STRIPE");
     }
 
     public Charge charge(ChargeRequest chargeRequest)
