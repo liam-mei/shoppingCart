@@ -1,11 +1,16 @@
 package com.lambdaschool.coffeebean.controller;
 
+import com.lambdaschool.coffeebean.exceptions.ForbiddenException;
 import com.lambdaschool.coffeebean.model.Address;
 import com.lambdaschool.coffeebean.repository.AddressRepository;
+import com.lambdaschool.coffeebean.repository.UserRepository;
 import com.lambdaschool.coffeebean.service.CheckIsAdmin;
+import com.lambdaschool.coffeebean.service.CurrentUser;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,48 +24,98 @@ public class AddressController extends CheckIsAdmin
     @Autowired
     AddressRepository addressrepos;
 
-    @GetMapping
-    List<Address> getAllAddresses()
-    {
-        return addressrepos.findAll();
-    }
+    @Autowired
+    UserRepository userrepos;
+
+//    @GetMapping
+//    List<Address> getAllAddresses()
+//    {
+//        return addressrepos.findAll();
+//    }
 
     @GetMapping("/{addressId}")
-    Address getAddressById(@PathVariable long addressId)
+    Object getAddressById(@PathVariable long addressId)
     {
-        return addressrepos.findById(addressId).get();
+        CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long currentUserId = currentuser.getCurrentUserId();
+
+        Address foundAddress = addressrepos.findAddressByUserIdAndAddressId(currentUserId, addressId);
+
+        if (foundAddress != null)
+        {
+            return foundAddress;
+        }
+        else
+        {
+            throw new ForbiddenException(HttpStatus.FORBIDDEN, "address being searched does not belong to current user");
+        }
     }
 
     @GetMapping("/displayedaddresses")
     List<Address> getDisplayedAddresses()
     {
-        return null;
+        CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long currentUserId = currentuser.getCurrentUserId();
+
+        return addressrepos.findDisplayAddresses(currentUserId);
     }
 
     @GetMapping("/hiddenaddresses")
     List<Address> getHiddenAddresses()
     {
-        return null;
+        CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long currentUserId = currentuser.getCurrentUserId();
+
+        return addressrepos.findHiddenAddresses(currentUserId);
     }
 
     @PostMapping
     Address postNewAddress(@RequestBody Address newAddress)
     {
+        CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long currentUserId = currentuser.getCurrentUserId();
+
+        newAddress.setAddressId(null);
+        newAddress.setUser(userrepos.findById(currentUserId).get());
         return addressrepos.save(newAddress);
     }
 
     @PutMapping
-    Address updateAddressById(@RequestBody Address updatedAddress)
+    Object updateAddressById(@RequestBody Address updatedAddress)
     {
-        return addressrepos.save(updatedAddress);
+        CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long currentUserId = currentuser.getCurrentUserId();
+
+        Address foundAddress = addressrepos.findAddressByUserIdAndAddressId(currentUserId, updatedAddress.getAddressId());
+
+        if (foundAddress != null)
+        {
+            updatedAddress.setUser(userrepos.findById(currentUserId).get());
+            return addressrepos.save(updatedAddress);
+        }
+        else
+        {
+            throw new ForbiddenException(HttpStatus.FORBIDDEN, "address being modified does not belong to current user");
+        }
     }
 
     @PutMapping("/toggledisplay/{addressId}")
-    Address toggleIfAddressDisplayed(@PathVariable long addressId)
+    Object toggleIfAddressDisplayed(@PathVariable long addressId)
     {
-        Address foundAddress = addressrepos.findById(addressId).get();
-        foundAddress.setDisplay(!foundAddress.isDisplay());
-        return addressrepos.save(foundAddress);
+        CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long currentUserId = currentuser.getCurrentUserId();
+
+        Address foundAddress = addressrepos.findAddressByUserIdAndAddressId(currentUserId, addressId);
+
+        if (foundAddress != null)
+        {
+            foundAddress.setDisplay(!foundAddress.isDisplay());
+            return addressrepos.save(foundAddress);
+        }
+        else
+        {
+            throw new ForbiddenException(HttpStatus.FORBIDDEN, "address being modified does not belong to current user");
+        }
     }
 
 
