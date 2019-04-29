@@ -1,7 +1,6 @@
 package com.lambdaschool.coffeebean.SendGrid;
 
 import com.sendgrid.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -9,8 +8,8 @@ import java.io.IOException;
 @Service
 public class SendGridService2
 {
-    @Value("${TEST_SENDGRID}")
-    String secretKey;
+//    @Value("${TEST_SENDGRID}")
+//    String secretKey;
 
     public void sendEmail (EmailModel email) throws IOException {
         Email from = new Email(email.getEmailFrom());
@@ -19,7 +18,8 @@ public class SendGridService2
         Content content = new Content("text/plain", email.getBody());
         Mail mail = new Mail(from, subject, to, content);
 
-        SendGrid sg = new SendGrid(secretKey);
+//        SendGrid sg = new SendGrid(secretKey);
+        SendGrid sg = new SendGrid(System.getenv().get("SENDGRID"));
         Request request = new Request();
         try {
             request.setMethod(Method.POST);
