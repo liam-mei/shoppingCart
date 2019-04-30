@@ -39,22 +39,22 @@ INSERT INTO products (product_id, description, image, price, product_name, inven
 INSERT INTO products (product_id, description, image, price, product_name, inventory) VALUES (22, 'description22', 'black-bean', 15.50, 'Random name', 10);
 
 INSERT INTO suppliers (supplier_id, supplier_name, supplier_phone) VALUES (1, 'supplier1', '111-111-1111');
-INSERT INTO suppliers (supplier_id, supplier_name, supplier_phone) VALUES (2, 'supplier2', '111-111-1111');
-INSERT INTO suppliers (supplier_id, supplier_name, supplier_phone) VALUES (3, 'supplier3', '111-111-1111');
+INSERT INTO suppliers (supplier_id, supplier_name, supplier_phone) VALUES (2, 'supplier2', '111-111-1112');
+INSERT INTO suppliers (supplier_id, supplier_name, supplier_phone) VALUES (3, 'supplier3', '111-111-1113');
 
 INSERT INTO user (user_id, role, username, password, email, receive_emails, cart_id) VALUES (1, 'admin', 'username1', '$2a$10$nRfvJ7epiIt8SJ9SIiiIdePm7GcV/mP6kJ.e7X3TeGh2swehrYnw2', 'email1@email.com', false, 1);
 INSERT INTO user (user_id, role, username, password, email, receive_emails, cart_id) VALUES (2, 'admin', 'username2', '$2a$10$nRfvJ7epiIt8SJ9SIiiIdePm7GcV/mP6kJ.e7X3TeGh2swehrYnw2', 'email2@email.com', false, 2);
 INSERT INTO user (user_id, role, username, password, email, first_name, middle_name, last_name, customer_phone, receive_emails, cart_id)
-VALUES (3, 'user', 'username3', '$2a$10$nRfvJ7epiIt8SJ9SIiiIdePm7GcV/mP6kJ.e7X3TeGh2swehrYnw2', 'email3@email.com', 'firstname3', 'middlename3', 'lastname3', '111-111-1111', true, 3);
+VALUES (3, 'user', 'username3', '$2a$10$nRfvJ7epiIt8SJ9SIiiIdePm7GcV/mP6kJ.e7X3TeGh2swehrYnw2', 'email3@email.com', 'firstname3', 'middlename3', 'lastname3', '111-111-1113', true, 3);
 INSERT INTO user (user_id, role, username, password, email, first_name, middle_name, last_name, customer_phone, receive_emails, cart_id)
-VALUES (4, 'user', 'username4', '$2a$10$nRfvJ7epiIt8SJ9SIiiIdePm7GcV/mP6kJ.e7X3TeGh2swehrYnw2', 'email4@email.com', 'firstname4', 'middlename4', 'lastname4', '111-111-1111', true, 4);
+VALUES (4, 'user', 'username4', '$2a$10$nRfvJ7epiIt8SJ9SIiiIdePm7GcV/mP6kJ.e7X3TeGh2swehrYnw2', 'email4@email.com', 'firstname4', 'middlename4', 'lastname4', '111-111-1114', true, 4);
 
 INSERT INTO carts (cart_id) VALUES (1);
 INSERT INTO carts (cart_id) VALUES (2);
 INSERT INTO carts (cart_id) VALUES (3);
 INSERT INTO carts (cart_id) VALUES (4);
 
-INSERT INTO cart_items (cart_item_id, quantity, cart_id, product_id) VALUES (1, 3, 3, 1);
+INSERT INTO cart_items (cart_item_id, quantity, cart_id, product_id) VALUES (1, 20, 3, 1);
 INSERT INTO cart_items (cart_item_id, quantity, cart_id, product_id) VALUES (2, 3, 3, 2);
 INSERT INTO cart_items (cart_item_id, quantity, cart_id, product_id) VALUES (3, 3, 3, 3);
 INSERT INTO cart_items (cart_item_id, quantity, cart_id, product_id) VALUES (4, 3, 4, 4);

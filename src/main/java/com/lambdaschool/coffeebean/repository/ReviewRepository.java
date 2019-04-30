@@ -26,4 +26,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long>
                     "GROUP BY p.product_id, p.product_name, p.description, p.image, p.price " +
                     "ORDER BY avgRating DESC, p.product_name LIMIT :start, 10", nativeQuery = true)
     List<ReviewItem> get10ReviewItemsByPage(int start);
+
+    @Query(value = "SELECT * FROM reviews WHERE user_id = :userId AND review_id = :reviewId", nativeQuery = true)
+    Review getReviewByUserIdAndReviewId(long userId, long reviewId);
 }

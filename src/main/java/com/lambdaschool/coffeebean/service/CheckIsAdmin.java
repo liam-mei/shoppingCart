@@ -3,7 +3,6 @@ package com.lambdaschool.coffeebean.service;
 import com.lambdaschool.coffeebean.model.User;
 import com.lambdaschool.coffeebean.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,21 +32,15 @@ public class CheckIsAdmin
         }};
     }
 
-    protected static Object isUsernameAndEmailUnique(@RequestBody User newuser, UserRepository userrepos)
-    {
-        CheckUsernameEmailIsUnique(newuser, userrepos);
-        HashMap<String, Object> returnObject = new HashMap<>();
-        if (!returnObject.isEmpty()) return returnObject;
-        return null;
-    }
-
-    public static HashMap<String, Object> CheckUsernameEmailIsUnique(@RequestBody User newuser, UserRepository userrepos)
+    public static HashMap<String, Object> CheckUsernameEmailIsUnique(User newuser, UserRepository userrepos)
     {
         String email = newuser.getEmail();
+        String phone = newuser.getCustomerPhone();
         HashMap<String, Object> returnObject = new HashMap<>();
 
         if (userrepos.findByUsername(newuser.getUsername()) != null) returnObject.put("usernameAlreadyExists", true);
         if (email != null && userrepos.findByEmail(email) != null) returnObject.put("emailAlreadyExists", true);
+        if (phone != null && userrepos.findByCustomerPhone(phone) != null) returnObject.put("phoneAlreadyExists", true);
         return returnObject;
     }
 }
