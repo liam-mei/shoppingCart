@@ -1,5 +1,6 @@
 package com.lambdaschool.coffeebean.controller;
 
+import com.lambdaschool.coffeebean.model.Cart;
 import com.lambdaschool.coffeebean.model.User;
 import com.lambdaschool.coffeebean.repository.UserRepository;
 import com.lambdaschool.coffeebean.service.CheckIsAdmin;
@@ -26,18 +27,20 @@ public class UserController extends CheckIsAdmin
         return userrepos.findAll();
     }
 
-    @GetMapping("/{userid}")
-    public User findUserByUserid(@PathVariable long userid)
+    @GetMapping("/{userId}")
+    public User findUserByUserid(@PathVariable long userId)
     {
-        return userrepos.findById(userid).get();
+        return userrepos.findById(userId).get();
     }
 
     @PostMapping("/addadmin")
     public Object addNewUser(@RequestBody User newuser) throws URISyntaxException
     {
-        Object uniqueConstraint = isUsernameAndEmailUnique(newuser, userrepos);
-        if (uniqueConstraint != null) return uniqueConstraint;
+        HashMap<String, Object> returnObject = CheckIsAdmin.CheckUsernameEmailIsUnique(newuser, userrepos);
+        if (!returnObject.isEmpty()) return returnObject;
 
+        newuser.setCart(new Cart());
+        newuser.setUserId(null);
         newuser.setRole("admin");
         return userrepos.save(newuser);
     }

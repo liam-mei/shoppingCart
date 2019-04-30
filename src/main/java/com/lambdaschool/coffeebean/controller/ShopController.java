@@ -84,6 +84,7 @@ public class ShopController
         return reviewrepos.getAllReviewItems();
     }
 
+    // ============= Use the Routes Below Only =================
 
     @GetMapping("/reviewitems/page/{page}/orderby/{orderBy}/ascdesc/{ascending}")
     public List<ProductWithReview> get10ReviewItemsByPage(@PathVariable int page,

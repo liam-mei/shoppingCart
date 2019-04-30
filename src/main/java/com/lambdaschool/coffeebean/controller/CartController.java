@@ -1,5 +1,6 @@
 package com.lambdaschool.coffeebean.controller;
 
+import com.lambdaschool.coffeebean.exceptions.ForbiddenException;
 import com.lambdaschool.coffeebean.model.Cart;
 import com.lambdaschool.coffeebean.model.CartItem;
 import com.lambdaschool.coffeebean.model.Order;
@@ -9,13 +10,13 @@ import com.lambdaschool.coffeebean.service.CheckIsAdmin;
 import com.lambdaschool.coffeebean.service.CurrentUser;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-@CrossOrigin
 @Api(value = "Some value... by DKM", description = "Cart Controller by DKM")
 @RestController
 @RequestMapping(path = "/cart", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -45,7 +46,7 @@ public class CartController extends CheckIsAdmin
     }
 
     @GetMapping("/{userId}")
-    public Object getCartItemsInCartById(@PathVariable long userId)
+    public Object getCartByUserId(@PathVariable long userId)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long currentUserId = currentuser.getCurrentUserId();
@@ -54,37 +55,41 @@ public class CartController extends CheckIsAdmin
 
         if (currentUserId == userId || isAdmin)
         {
-            return cartrepos.getCartByCartId(currentuser.getCartId());
+            return cartrepos.getCartByCartId(userId);
 
         } else
         {
-            return doesUsernameMatch(currentUserId, userId, false);
+//            throw new IOException("testMessage?");
+//            throw new org.springframework.web.client.HttpClientErrorException(HttpStatus.FORBIDDEN, "masdfasdf");
+//            throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "message");
+            throw new ForbiddenException(HttpStatus.FORBIDDEN, "searched cart does not match current user's cart");
+//            throw new AuthenticationException(userId, "cartId does not belong to you");
+//            return doesUsernameMatch(currentUserId, userId, false);
         }
     }
 
 
-    @PostMapping("/addtocart/{userId}/{productId}/{quantity}")
-    public HashMap<String, Object> postItemToCart(@PathVariable long userId,
+    @PostMapping("/addtocart/{cartId}/{productId}/{quantity}")
+    public HashMap<String, Object> postItemToCart(@PathVariable long cartId,
                                                   @PathVariable long productId,
                                                   @PathVariable int quantity)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long currentUserId = currentuser.getCurrentUserId();
         long currentUserCartId = currentuser.getCartId();
 
         boolean isAdmin = testIsAdmin(currentuser);
         HashMap<String, Object> returnObject = new HashMap<>();
 
-        if (currentUserId == userId || isAdmin)
+        if (currentUserCartId == cartId || isAdmin)
         {
-            CartItem foundCartItem = cartitemrepos.findCartItem(currentUserCartId, productId);
+            CartItem foundCartItem = cartitemrepos.findCartItem(cartId, productId);
             if (foundCartItem != null)
             {
                 int previousQuantity = foundCartItem.getQuantity();
                 int total = previousQuantity + quantity;
                 cartitemrepos.modifyQuantityInCart(currentUserCartId, productId, total);
 
-                returnObject.put("userId", currentUserId);
+                returnObject.put("cartId", cartId);
                 returnObject.put("previouslyExisted", true);
                 returnObject.put("productName", foundCartItem.getProduct().getProductName());
                 returnObject.put("previousQuantity", previousQuantity);
@@ -93,105 +98,106 @@ public class CartController extends CheckIsAdmin
             } else
             {
                 cartitemrepos.postCartItemToCart(new Date(), quantity, currentUserCartId, productId);
-                returnObject.put("userId", userId);
+                returnObject.put("cartId", cartId);
                 returnObject.put("prevouslyExisted", false);
                 returnObject.put("quantityToBeAdded", quantity);
             }
             return returnObject;
         } else
         {
-            return doesUsernameMatch(currentUserId, userId, false);
+            throw new ForbiddenException(HttpStatus.FORBIDDEN, "cart being added to does not match current user's cart");
         }
     }
 
-    @PutMapping("/modifyquantityincart/{userId}/{productId}/{quantity}")
-    public Object modifyQuantityInCart(@PathVariable long userId,
+    @PutMapping("/modifyquantityincart/{cartId}/{productId}/{quantity}")
+    public Object modifyQuantityInCart(@PathVariable long cartId,
                                        @PathVariable long productId,
                                        @PathVariable int quantity)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long currentUserId = currentuser.getCurrentUserId();
+        long currentUserCartId = currentuser.getCartId();
 
         boolean isAdmin = testIsAdmin(currentuser);
 
-        if (currentUserId == userId || isAdmin)
+        if (currentUserCartId == cartId || isAdmin)
         {
-            CartItem foundCartItem = cartitemrepos.findCartItem(currentuser.getCartId(), productId);
+            CartItem foundCartItem = cartitemrepos.findCartItem(currentUserCartId, productId);
             if (foundCartItem != null)
             {
                 int previousQuantity = foundCartItem.getQuantity();
-                cartitemrepos.modifyQuantityInCart(userId, productId, quantity);
+                cartitemrepos.modifyQuantityInCart(cartId, productId, quantity);
                 return "There were " + previousQuantity + ", but now there are " + quantity + " of " +
                         foundCartItem.getProduct().getProductName() + " in " + currentuser.getUsername() + "'s cart.";
             } else
             {
-                return userId + " does not have productId: " + productId + "in their cart.";
+                return cartId + " does not have productId: " + productId + "in their cart.";
             }
 
         } else
         {
-            return doesUsernameMatch(currentUserId, userId, false);
+            throw new ForbiddenException(HttpStatus.FORBIDDEN, "cart being modified does not match current user's cart");
         }
 
     }
 
-    @DeleteMapping("/remove/{userId}/{productId}")
-    public Object deleteOneItemFromCart(@PathVariable long userId, @PathVariable long productId)
+    @DeleteMapping("/remove/{cartId}/{productId}")
+    public Object deleteOneItemFromCart(@PathVariable long cartId, @PathVariable long productId)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long currentUserId = currentuser.getCurrentUserId();
+        long currentUserCartId = currentuser.getCartId();
 
         boolean isAdmin = testIsAdmin(currentuser);
 
-        if (currentUserId == userId || isAdmin)
+        if (currentUserCartId == cartId || isAdmin)
         {
-            cartitemrepos.deleteOneItemFromCart(currentuser.getCartId(), productId);
-            return "You have deleted product: " + productId + " from user: " + userId;
+            cartitemrepos.deleteOneItemFromCart(currentUserCartId, productId);
+            return "You have deleted product: " + productId + " from user: " + currentuser.getCurrentUserId();
 
         } else
         {
-            return doesUsernameMatch(currentUserId, userId, false);
+            throw new ForbiddenException(HttpStatus.FORBIDDEN, "cart being modified does not match current user's cart");
         }
 
     }
 
-    @DeleteMapping("/modifytozero/{userId}/{productId}")
-    public Object modifyToZero(@PathVariable long userId, @PathVariable long productId)
+    @DeleteMapping("/modifytozero/{cartId}/{productId}")
+    public Object modifyToZero(@PathVariable long cartId, @PathVariable long productId)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        long currentUserId = currentuser.getCurrentUserId();
+        long currentUserCartId = currentuser.getCartId();
 
         boolean isAdmin = testIsAdmin(currentuser);
 
-        if (currentUserId == userId || isAdmin)
+        if (currentUserCartId == cartId || isAdmin)
         {
-            cartitemrepos.modifyQuantityInCart(currentuser.getCartId(), productId, 0);
-            return "There are now 0 of " + productId + " in " + userId + "'s cart.";
+            cartitemrepos.modifyQuantityInCart(currentUserCartId, productId, 0);
+            return "There are now 0 of " + productId + " in " + currentuser.getCurrentUserId() + "'s cart.";
 
         } else
         {
-            return doesUsernameMatch(currentUserId, userId, false);
+            throw new ForbiddenException(HttpStatus.FORBIDDEN, "cart being modified does not match current user's cart");
         }
 
 
     }
 
-    @DeleteMapping("/deleteall/{userId}")
-    public Object deleteAllItemsFromCart(@PathVariable long userId)
+    @DeleteMapping("/deleteall/{cartId}")
+    public Object deleteAllItemsFromCart(@PathVariable long cartId)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long currentUserId = currentuser.getCurrentUserId();
+        long currentUserCartId = currentuser.getCartId();
 
         boolean isAdmin = testIsAdmin(currentuser);
 
-        if (currentUserId == userId || isAdmin)
+        if (currentUserCartId == cartId || isAdmin)
         {
-            cartitemrepos.deleteAllItemsFromCart(currentuser.getCartId());
-            return "You have deleted all itemsInCart in cart from user :" + userId;
+            cartitemrepos.deleteAllItemsFromCart(currentUserCartId);
+            return "You have deleted all itemsInCart in cart from user :" + currentUserId;
 
         } else
         {
-            return doesUsernameMatch(currentUserId, userId, false);
+            throw new ForbiddenException(HttpStatus.FORBIDDEN, "cart being modified does not match current user's cart");
         }
 
 

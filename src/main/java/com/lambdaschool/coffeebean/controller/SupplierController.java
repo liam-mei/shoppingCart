@@ -26,10 +26,10 @@ public class SupplierController
         return suppplierrepos.findAll();
     }
 
-    @GetMapping("/{supplierid}")
-    public Supplier getSupplierById(@PathVariable long supplierid)
+    @GetMapping("/{supplierId}")
+    public Supplier getSupplierById(@PathVariable long supplierId)
     {
-        return suppplierrepos.findById(supplierid).get();
+        return suppplierrepos.findById(supplierId).get();
     }
 
     @PostMapping("")
@@ -38,21 +38,21 @@ public class SupplierController
         return suppplierrepos.save(newSupplier);
     }
 
-    @PostMapping("/supplierid/{supplierid}/productid/{productid}")
-    public Supplier addSupplierToProduct(@PathVariable long supplierid, @PathVariable long productid)
+    @PostMapping("/supplierid/{supplierId}/productid/{productId}")
+    public Supplier addSupplierToProduct(@PathVariable long supplierId, @PathVariable long productId)
     {
-        suppplierrepos.addSupplierToProduct(supplierid, productid);
-        return suppplierrepos.findById(supplierid).get();
+        suppplierrepos.addSupplierToProduct(supplierId, productId);
+        return suppplierrepos.findById(supplierId).get();
     }
 
-    @PutMapping("/{supplierid}")
-    public Object updateSupplierBySupplierID(@PathVariable long supplierid, @RequestBody Supplier updatedSupplier)
+    @PutMapping("/{supplierId}")
+    public Object updateSupplierBySupplierID(@PathVariable long supplierId, @RequestBody Supplier updatedSupplier)
     {
-        Optional<Supplier> foundSupplier = suppplierrepos.findById(supplierid);
+        Optional<Supplier> foundSupplier = suppplierrepos.findById(supplierId);
 
         if (foundSupplier.isPresent())
         {
-            updatedSupplier.setSupplierId(supplierid);
+            updatedSupplier.setSupplierId(supplierId);
             if (updatedSupplier.getSupplierName() == null)
                 updatedSupplier.setSupplierName(foundSupplier.get().getSupplierName());
             if (updatedSupplier.getSupplierPhone() == null)
@@ -62,29 +62,29 @@ public class SupplierController
             return suppplierrepos.save(updatedSupplier);
         } else
         {
-            return "Supplier with id: " + supplierid + " is not found.";
+            return "Supplier with id: " + supplierId + " is not found.";
         }
     }
 
-    @DeleteMapping("/supplierid/{supplierid}/productid/{productid}")
-    public Supplier deleteSupplierFromProduct(@PathVariable long supplierid, @PathVariable long productid)
+    @DeleteMapping("/supplierid/{supplierId}/productid/{productId}")
+    public Supplier deleteSupplierFromProduct(@PathVariable long supplierId, @PathVariable long productId)
     {
-        Supplier foundSupplier = suppplierrepos.findById(supplierid).get();
-        suppplierrepos.deleteSupplierFromProduct(supplierid, productid);
+        Supplier foundSupplier = suppplierrepos.findById(supplierId).get();
+        suppplierrepos.deleteSupplierFromProduct(supplierId, productId);
         return foundSupplier;
     }
 
-    @DeleteMapping("/{supplierid}")
-    public Object deleteSupplierById(@PathVariable long supplierid)
+    @DeleteMapping("/{supplierId}")
+    public Object deleteSupplierById(@PathVariable long supplierId)
     {
-        Optional<Supplier> foundSupplier = suppplierrepos.findById(supplierid);
+        Optional<Supplier> foundSupplier = suppplierrepos.findById(supplierId);
         if (foundSupplier.isPresent())
         {
-            suppplierrepos.deleteById(supplierid);
+            suppplierrepos.deleteById(supplierId);
             return foundSupplier.get();
         } else
         {
-            return "Supplier with id: " + supplierid + " is not found.";
+            return "Supplier with id: " + supplierId + " is not found.";
         }
     }
 

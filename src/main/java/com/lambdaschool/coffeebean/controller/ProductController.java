@@ -26,10 +26,10 @@ public class ProductController
         return productrepos.findAll();
     }
 
-    @GetMapping("/{productid}")
-    public Product findProductByProductId(@PathVariable long productid)
+    @GetMapping("/{productId}")
+    public Product findProductByProductId(@PathVariable long productId)
     {
-        return productrepos.findById(productid).get();
+        return productrepos.findById(productId).get();
     }
 
     @PostMapping("")
@@ -38,14 +38,12 @@ public class ProductController
         return productrepos.save(newProduct);
     }
 
-    @PutMapping("/{productid}")
-    public Object modifyProductById(@RequestBody Product updatedP, @PathVariable long productid)
+    @PutMapping("/{productId}")
+    public Object modifyProductById(@RequestBody Product updatedP, @PathVariable long productId)
     {
-        Optional<Product> foundProduct = productrepos.findById(productid);
+        Optional<Product> foundProduct = productrepos.findById(productId);
         if (foundProduct.isPresent())
         {
-//            if (updatedP.getProductorders() == null) updatedP.setProductorders(foundProduct.get().getProductorders());
-//            if (updatedP.getProductusers() == null) updatedP.setProductusers(foundProduct.get().getProductusers());
             if (updatedP.getProductName() == null) updatedP.setProductName(foundProduct.get().getProductName());
             if (updatedP.getDescription() == null) updatedP.setDescription(foundProduct.get().getDescription());
 //            if (updatedP.getExpiration() == null) updatedP.setExpiration(foundProduct.get().getExpiration());
@@ -54,25 +52,25 @@ public class ProductController
             if (updatedP.getImage() == null) updatedP.setImage(foundProduct.get().getImage());
             if (updatedP.getPrice() == null) updatedP.setPrice(foundProduct.get().getPrice());
 
-            updatedP.setProductId(productid);
+            updatedP.setProductId(productId);
             return productrepos.save(updatedP);
         } else
         {
-            return "Product with id: " + productid + " could not be found.";
+            return "Product with id: " + productId + " could not be found.";
         }
     }
 
-    @DeleteMapping("/{productid}")
-    public Object deleteProductById(@PathVariable long productid)
+    @DeleteMapping("/{productId}")
+    public Object deleteProductById(@PathVariable long productId)
     {
-        Optional<Product> foundProduct = productrepos.findById(productid);
+        Optional<Product> foundProduct = productrepos.findById(productId);
         if (foundProduct.isPresent())
         {
-            productrepos.deleteById(productid);
+            productrepos.deleteById(productId);
             return foundProduct.get();
         } else
         {
-            return "Product with id: " + productid + " could not be found.";
+            return "Product with id: " + productId + " could not be found.";
         }
     }
 
