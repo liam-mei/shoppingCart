@@ -18,7 +18,7 @@ public class User
     @JsonView({View.Essential.class})
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long userId;
+    private Long userId;
 
     @JsonView({View.Essential.class})
     @Column(length = 250, unique = true)
@@ -42,6 +42,7 @@ public class User
 
     private String lastName;
 
+    @Column(length = 250, unique = true)
     private String customerPhone;
 
     @JsonView({View.Essential.class})
@@ -102,12 +103,12 @@ public class User
         return Collections.singletonList(new SimpleGrantedAuthority(myRole));
     }
 
-    public long getUserId()
+    public Long getUserId()
     {
         return userId;
     }
 
-    public void setUserId(long userId)
+    public void setUserId(Long userId)
     {
         this.userId = userId;
     }

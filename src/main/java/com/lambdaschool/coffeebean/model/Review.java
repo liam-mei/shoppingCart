@@ -32,7 +32,7 @@ public class Review
     @JsonIgnoreProperties({
             "reviews", "orderHistory", "cart", "currentPassword",
             "middleName", "lastName", "customerPhone", "receiveEmails",
-            "addresses"})
+            "addresses", "email", "firstName"})
     private User reviewer;
 
     // ManyToOne with Product - Owner
@@ -51,7 +51,7 @@ public class Review
         return reviewId;
     }
 
-    public void setReviewId(long reviewId)
+    public void setReviewId(Long reviewId)
     {
         this.reviewId = reviewId;
     }

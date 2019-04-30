@@ -13,8 +13,10 @@ public class Supplier
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long supplierId;
 
+    @Column(length = 250, unique = true)
     private String supplierName;
 
+    @Column(length = 250, unique = true)
     private String supplierPhone;
 
     // *** ManyToMany with product - supplierproduct - owner ***
