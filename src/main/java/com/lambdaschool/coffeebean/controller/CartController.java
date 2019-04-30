@@ -217,13 +217,19 @@ public class CartController extends CheckIsAdmin
 
         Set<CartItem> currentCartItems = cartrepos.getCartByCartId(currentUserId).getItemsInCart();
 
-        ArrayList<Product> productsWithConstraint = new ArrayList<>();
+        ArrayList<HashMap<String, Object>> productsWithConstraint = new ArrayList<>();
 
         currentCartItems.forEach(cartItem ->
         {
             if ( cartItem.getProduct().getInventory() < cartItem.getQuantity() )
             {
-                productsWithConstraint.add(cartItem.getProduct());
+                Product cartProduct = cartItem.getProduct();
+                HashMap<String, Object> constraintObj = new HashMap<>();
+                constraintObj.put("productId", cartProduct.getProductId());
+                constraintObj.put("productName", cartProduct.getProductName());
+                constraintObj.put("inventory", cartProduct.getInventory());
+                constraintObj.put("cartQuantity", cartItem.getQuantity());
+                productsWithConstraint.add(constraintObj);
             }
         });
 
