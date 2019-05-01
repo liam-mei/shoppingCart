@@ -46,7 +46,7 @@ public class CartController extends CheckIsAdmin
     }
 
     @GetMapping("/{userId}")
-    public Object getCartByUserId(@PathVariable long userId)
+    public Cart getCartByUserId(@PathVariable long userId)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long currentUserId = currentuser.getCurrentUserId();
@@ -55,7 +55,7 @@ public class CartController extends CheckIsAdmin
 
         if (currentUserId == userId || isAdmin)
         {
-            return cartrepos.getCartByCartId(userId);
+            return cartrepos.findById(currentuser.getCartId()).get();
 
         } else
         {
@@ -65,6 +65,24 @@ public class CartController extends CheckIsAdmin
             throw new ForbiddenException(HttpStatus.FORBIDDEN, "searched cart does not match current user's cart");
 //            throw new AuthenticationException(userId, "cartId does not belong to you");
 //            return doesUsernameMatch(currentUserId, userId, false);
+        }
+    }
+
+    @GetMapping("/{userId}/orderbydate")
+    public List<CartItem> getCartByUserIdOrderByDate(@PathVariable long userId)
+    {
+        CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long currentUserId = currentuser.getCurrentUserId();
+
+        boolean isAdmin = testIsAdmin(currentuser);
+
+        if (currentUserId == userId || isAdmin)
+        {
+            return cartitemrepos.findCartItemsByDate(currentuser.getCartId());
+
+        } else
+        {
+            throw new ForbiddenException(HttpStatus.FORBIDDEN, "searched cart does not match current user's cart");
         }
     }
 
@@ -204,11 +222,7 @@ public class CartController extends CheckIsAdmin
     }
 
 //    // ============ BUY ================
-//
-//    // 1. get CurrentUserId from getPrincipal()
-//    // 2. delete itemsInCart from cart'
-//    // 3. save order with the limited data
-//    // 4. return actual order from database with correct information
+
     @PostMapping("/buy")
     public Object buyItemsInCart()
     {

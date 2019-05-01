@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 
 @RestController
@@ -109,7 +110,7 @@ public class CustomerController extends CheckIsAdmin
             if (updatedUser.getUsername() == null) updatedUser.setUsername(foundUser.getUsername());
             if (updatedUser.getPassword() == null) updatedUser.setPassword(updatedUser.getCurrentPassword());
             if (updatedUser.getEmail() == null) updatedUser.setEmail(foundUser.getEmail());
-            if (updatedUser.isReceiveEmails() == true)
+            if (updatedUser.isReceiveEmails())
             {
                 updatedUser.setReceiveEmails(true);
             }
@@ -121,10 +122,12 @@ public class CustomerController extends CheckIsAdmin
             // fields user can't change or can't change at this url
             updatedUser.setCart(cartrepos.findById(currentuser.getCartId()).get());
             updatedUser.setOrderHistory(foundUser.getOrderHistory());
-            updatedUser.setReviews(foundUser.getReviews());
             updatedUser.setAddresses(foundUser.getAddresses());
+            updatedUser.setCreatedAt(foundUser.getCreatedAt());
+            updatedUser.setReviews(foundUser.getReviews());
             updatedUser.setUserId(currentUserId);
             updatedUser.setCurrentPassword(null);
+            updatedUser.setUpdatedAt(new Date());
             updatedUser.setRole("user");
 
             return userrepos.save(updatedUser);
