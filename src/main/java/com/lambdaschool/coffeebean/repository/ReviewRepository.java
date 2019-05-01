@@ -32,4 +32,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long>
 
     @Query(value = "SELECT * FROM reviews WHERE product_id = :productId ORDER BY stars DESC LIMIT :start, 10", nativeQuery = true)
     List<Review> get10ReviewsWithProductId(long productId, int start);
+
+    @Query(value = "SELECT * FROM reviews WHERE product_id = :productId ORDER BY stars DESC", nativeQuery = true)
+    List<Review> getAllReviewsWithProductId(long productId);
 }

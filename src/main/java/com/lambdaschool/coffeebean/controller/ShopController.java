@@ -118,4 +118,10 @@ public class ShopController
 
         return reviewrepos.get10ReviewsWithProductId(productId, start);
     }
+
+    @GetMapping("reviews/{productId}")
+    public List<Review> getAllReviewsWithProductId(@PathVariable long productId)
+    {
+        return reviewrepos.getAllReviewsWithProductId(productId);
+    }
 }
