@@ -110,4 +110,12 @@ public class ShopController
 
         return productrepos.searchFor10ProductsWithReviewsDataBySearchString(searchSet, start, ascending, orderBy);
     }
+
+    @GetMapping("reviews/{productId}/page/{page}")
+    public List<Review> get10ReviewsWithProductId(@PathVariable long productId, @PathVariable int page)
+    {
+        int start = (page - 1) * 10;
+
+        return reviewrepos.get10ReviewsWithProductId(productId, start);
+    }
 }

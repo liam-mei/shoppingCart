@@ -1,7 +1,7 @@
 package com.lambdaschool.coffeebean.repository;
 
-import com.lambdaschool.coffeebean.model.Review;
 import com.lambdaschool.coffeebean.CriteriaAPIProducts.ReviewItem;
+import com.lambdaschool.coffeebean.model.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -29,4 +29,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long>
 
     @Query(value = "SELECT * FROM reviews WHERE user_id = :userId AND review_id = :reviewId", nativeQuery = true)
     Review getReviewByUserIdAndReviewId(long userId, long reviewId);
+
+    @Query(value = "SELECT * FROM reviews WHERE product_id = :productId ORDER BY stars DESC LIMIT :start, 10", nativeQuery = true)
+    List<Review> get10ReviewsWithProductId(long productId, int start);
 }
