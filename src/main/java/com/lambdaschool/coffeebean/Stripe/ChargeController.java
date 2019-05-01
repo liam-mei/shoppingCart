@@ -27,7 +27,7 @@ public class ChargeController
         Charge charge = paymentsService.charge(chargeRequest);
 
         HashMap<String, Object> map = new HashMap<>();
-        map.put("id", charge.getId());
+//        map.put("id", charge.getId());
         map.put("status", charge.getStatus());
         map.put("chargeId", charge.getId());
         map.put("balance_transaction", charge.getBalanceTransaction());
@@ -46,4 +46,5 @@ public class ChargeController
         errormap.put("requestId", ex.getRequestId());
         return errormap;
     }
+
 }
