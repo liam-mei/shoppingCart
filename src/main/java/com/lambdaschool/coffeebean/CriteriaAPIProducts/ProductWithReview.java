@@ -1,6 +1,6 @@
 package com.lambdaschool.coffeebean.CriteriaAPIProducts;
 
-class ProductWithReview
+public class ProductWithReview
 {
     private Long productId;
     private String productName;
