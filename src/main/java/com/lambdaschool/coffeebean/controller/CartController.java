@@ -256,7 +256,7 @@ public class CartController extends CheckIsAdmin
         if (productsWithConstraint.size() > 0)
         {
             HashMap<Object, Object> returnObject = new HashMap<>();
-            returnObject.put("inventoryConstraint", true);
+            returnObject.put("error", "inventory constraint - one or more items do not have sufficient inventory to support ordered quantity");
             returnObject.put("productsWithConstraint", productsWithConstraint);
             return returnObject;
         }
