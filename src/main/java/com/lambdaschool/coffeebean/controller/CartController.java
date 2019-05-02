@@ -1,5 +1,6 @@
 package com.lambdaschool.coffeebean.controller;
 
+import com.lambdaschool.coffeebean.exceptions.BadRequestException;
 import com.lambdaschool.coffeebean.exceptions.ForbiddenException;
 import com.lambdaschool.coffeebean.model.Cart;
 import com.lambdaschool.coffeebean.model.CartItem;
@@ -230,6 +231,11 @@ public class CartController extends CheckIsAdmin
         long currentUserId = currentuser.getCurrentUserId();
 
         Set<CartItem> currentCartItems = cartrepos.getCartByCartId(currentUserId).getItemsInCart();
+
+        if (currentCartItems.isEmpty())
+        {
+            throw new BadRequestException(HttpStatus.BAD_REQUEST, "Your cart is empty");
+        }
 
         ArrayList<HashMap<String, Object>> productsWithConstraint = new ArrayList<>();
 
