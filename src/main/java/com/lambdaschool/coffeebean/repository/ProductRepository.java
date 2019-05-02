@@ -21,7 +21,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Product
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE products p SET inventory = p.inventory-:quantityinorder WHERE (product_id = :productid)", nativeQuery = true)
+    @Query(value = "UPDATE products p SET inventory = p.inventory-:quantityinorder, total_ordered = p.total_ordered+:quantityinorder WHERE (product_id = :productid)", nativeQuery = true)
     void removeOrderedQtyFromInventory(long productid, int quantityinorder);
 
 }

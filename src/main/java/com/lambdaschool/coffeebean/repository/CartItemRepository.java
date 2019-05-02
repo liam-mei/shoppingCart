@@ -7,11 +7,16 @@ import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long>
 {
     @Query(value = "SELECT * FROM cart_items WHERE (cart_id = :cartId AND product_id = :productId)", nativeQuery = true)
     CartItem findCartItem(long cartId, long productId);
+
+
+    @Query(value = "SELECT * FROM cart_items WHERE cart_id = :cartId ORDER BY created_at DESC", nativeQuery = true)
+    List<CartItem> findCartItemsByDate(long cartId);
 
     @Transactional
     @Modifying

@@ -11,9 +11,9 @@ public interface AddressRepository extends JpaRepository<Address, Long>
     @Query(value = "SELECT * FROM addresses WHERE (user_id = :userId AND address_id = :addressId)", nativeQuery = true)
     Address findAddressByUserIdAndAddressId(long userId, long addressId);
 
-    @Query(value = "SELECT * FROM addresses WHERE (user_id = :userId AND display = 1)", nativeQuery = true)
+    @Query(value = "SELECT * FROM addresses WHERE user_id = :userId AND display = 1 ORDER BY updated_at DESC", nativeQuery = true)
     List<Address> findDisplayAddresses(long userId);
 
-    @Query(value = "SELECT * FROM addresses WHERE (user_id = :userId AND display = 0)", nativeQuery = true)
+    @Query(value = "SELECT * FROM addresses WHERE (user_id = :userId AND display = 0) ORDER BY updated_at DESC", nativeQuery = true)
     List<Address> findHiddenAddresses(long userId);
 }
