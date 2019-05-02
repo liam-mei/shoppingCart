@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,6 +60,9 @@ public class SupplierController
                 updatedSupplier.setSupplierPhone(foundSupplier.get().getSupplierPhone());
             if (updatedSupplier.getProductsFromSupplier().isEmpty())
                 updatedSupplier.setProductsFromSupplier(foundSupplier.get().getProductsFromSupplier());
+
+            updatedSupplier.setCreatedAt(foundSupplier.get().getCreatedAt());
+            updatedSupplier.setUpdatedAt(new Date());
             return suppplierrepos.save(updatedSupplier);
         } else
         {

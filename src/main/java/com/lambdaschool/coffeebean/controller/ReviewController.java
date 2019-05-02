@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Api(value = "Some value... by DKM", description = "Review Controller by DKM")
@@ -64,6 +65,8 @@ public class ReviewController
             if (updatedReview.getStars() == null) updatedReview.setStars(foundReview.getStars());
 
             updatedReview.setReviewer(foundReview.getReviewer());
+            updatedReview.setCreatedAt(foundReview.getCreatedAt());
+            updatedReview.setUpdatedAt(new Date());
             return reviewrepos.save(updatedReview);
         }
         else

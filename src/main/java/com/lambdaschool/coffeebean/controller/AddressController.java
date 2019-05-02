@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @CrossOrigin
@@ -90,7 +91,15 @@ public class AddressController extends CheckIsAdmin
 
         if (foundAddress != null)
         {
+            if (updatedAddress.getZipcode() == null ) updatedAddress.setZipcode(foundAddress.getZipcode());
+            if (updatedAddress.getStreet() == null ) updatedAddress.setStreet(foundAddress.getStreet());
+            if (updatedAddress.getState() == null ) updatedAddress.setState(foundAddress.getState());
+            if (updatedAddress.getCity() == null ) updatedAddress.setCity(foundAddress.getCity());
+
             updatedAddress.setUser(userrepos.findById(currentUserId).get());
+            updatedAddress.setCreatedAt(foundAddress.getCreatedAt());
+            updatedAddress.setDisplay(foundAddress.isDisplay());
+            updatedAddress.setUpdatedAt(new Date());
             return addressrepos.save(updatedAddress);
         }
         else
