@@ -119,14 +119,13 @@ public class ProductrepositoryCustomImpl implements ProductrepositoryCustom
         }
 
 
-        List<ProductWithReview> resultList = entityManager.createQuery(query)
+        return entityManager.createQuery(query)
                 .setFirstResult(start)
                 .setMaxResults(10)
                 .getResultList();
-
-        return resultList;
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
     public List<ProductWithReview> get10ReviewItemsByPage(int start, String ascending, String orderBy)
     {
@@ -192,11 +191,9 @@ public class ProductrepositoryCustomImpl implements ProductrepositoryCustom
                     .orderBy(cb.desc(productRoot.get(orderBy)));
         }
 
-        List<ProductWithReview> resultList = entityManager.createQuery(query)
+        return entityManager.createQuery(query)
                 .setFirstResult(start)
                 .setMaxResults(10)
                 .getResultList();
-
-        return resultList;
     }
 }

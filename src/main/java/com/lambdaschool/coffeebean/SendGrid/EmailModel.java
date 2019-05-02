@@ -2,13 +2,13 @@ package com.lambdaschool.coffeebean.SendGrid;
 
 public class EmailModel
 {
-    String emailFrom;
+    private String emailFrom;
 
-    String emailTo;
+    private String emailTo;
 
-    String subject;
+    private String subject;
 
-    String body;
+    private String body;
 
     public EmailModel(String emailFrom, String emailTo, String subject, String body)
     {
