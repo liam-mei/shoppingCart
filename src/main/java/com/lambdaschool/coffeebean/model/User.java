@@ -9,6 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -48,6 +49,10 @@ public class User
     @JsonView({View.Essential.class})
     @Column(length = 250, unique = true)
     private String email;
+
+    Date createdAt = new Date();
+
+    Date updatedAt = new Date();
 
     // Used for SendGrid Promo Emails
     private boolean receiveEmails = false;
@@ -241,5 +246,25 @@ public class User
     public void setAddresses(Set<Address> addresses)
     {
         this.addresses = addresses;
+    }
+
+    public Date getCreatedAt()
+    {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt)
+    {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt)
+    {
+        this.updatedAt = updatedAt;
     }
 }

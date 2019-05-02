@@ -3,6 +3,7 @@ package com.lambdaschool.coffeebean.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -11,17 +12,21 @@ public class Address
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long addressId;
+    Long addressId;
 
-    String street;
+    private String street;
 
-    String city;
+    private String city;
 
-    String state;
+    private String state;
 
-    String zipcode;
+    private String zipcode;
 
-    boolean display;
+    private boolean display;
+
+    private Date createdAt = new Date();
+
+    private Date updatedAt = new Date();
 
     //ManyToOne to User
     @ManyToOne
@@ -29,24 +34,28 @@ public class Address
     @JsonIgnoreProperties({
             "reviews", "orderHistory", "cart", "currentPassword",
             "middleName", "lastName", "customerPhone", "receiveEmails",
-            "addresses"})
+            "addresses", "createdAt", "updatedAt"})
     private User user;
 
     //OneToMany to Order
     @OneToMany(cascade = CascadeType.DETACH, mappedBy = "shippingAddress")
-    @JsonIgnoreProperties({"user", "itemsInOrder", "shippingAddress", "billingAddress"})
+    @JsonIgnoreProperties({
+            "user", "itemsInOrder", "shippingAddress", "billingAddress",
+            "paymentDetails", "shipDateTime", "shippedStatus", "orderDateTime", "createdAt"})
     private Set<Order> ordersUsingThisAsShipping;
 
     //OneToMany with Order
     @OneToMany(cascade = CascadeType.DETACH, mappedBy = "billingAddress")
-    @JsonIgnoreProperties({"user", "itemsInOrder", "shippingAddress", "billingAddress"})
+    @JsonIgnoreProperties({
+            "user", "itemsInOrder", "shippingAddress", "billingAddress",
+            "paymentDetails", "shipDateTime", "shippedStatus", "orderDateTime", "createdAt"})
     private Set<Order> ordersUsingThisAsBilling;
 
     public Address()
     {
     }
 
-    public long getAddressId()
+    public Long getAddressId()
     {
         return addressId;
     }
@@ -134,5 +143,25 @@ public class Address
     public void setOrdersUsingThisAsBilling(Set<Order> ordersUsingThisAsBilling)
     {
         this.ordersUsingThisAsBilling = ordersUsingThisAsBilling;
+    }
+
+    public Date getCreatedAt()
+    {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt)
+    {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt)
+    {
+        this.updatedAt = updatedAt;
     }
 }

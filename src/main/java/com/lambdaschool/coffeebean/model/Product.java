@@ -6,6 +6,7 @@ import com.lambdaschool.coffeebean.controller.View;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import java.util.Date;
 import java.util.Set;
 
 
@@ -17,7 +18,7 @@ public class Product
     @JsonView({View.Essential.class})
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long productId;
+    private Long productId;
 
     @JsonView({View.Essential.class})
     private String productName;
@@ -35,15 +36,21 @@ public class Product
     @JsonView({View.Essential.class})
     private String image;
 
+    private Date createdAt = new Date();
+
+    private Date updatedAt = new Date();
+
+    private int totalOrdered = 0;
+
     // ====== Review ======
     // OneToMany with Review
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "reviewedProduct")
-    @JsonIgnoreProperties({"reviewedProduct"})
+    @JsonIgnoreProperties({"reviewedProduct", "createdAt", "updatedAt"})
     private Set<Review> productReviews;
 
     // OneToMany with CartItem - subowner
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
-    @JsonIgnoreProperties({"product", "cart"})
+    @JsonIgnoreProperties({"product", "cart", "createdAt"})
     private Set<CartItem> cartItems;
 
     // ===== Other Join Tables ========
@@ -51,7 +58,7 @@ public class Product
     // *** ManyToMany with supplier - subowner ***
 //    @JsonIgnore
     @ManyToMany(mappedBy = "productsFromSupplier", fetch = FetchType.EAGER)
-    @JsonIgnoreProperties("productsFromSupplier")
+    @JsonIgnoreProperties({"productsFromSupplier", "createdAt", "updatedAt"})
     private Set<Supplier> suppliers;
 
 
@@ -68,12 +75,12 @@ public class Product
     {
     }
 
-    public long getProductId()
+    public Long getProductId()
     {
         return productId;
     }
 
-    public void setProductId(long productId)
+    public void setProductId(Long productId)
     {
         this.productId = productId;
     }
@@ -156,5 +163,35 @@ public class Product
     public void setSuppliers(Set<Supplier> suppliers)
     {
         this.suppliers = suppliers;
+    }
+
+    public Date getCreatedAt()
+    {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt)
+    {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt)
+    {
+        this.updatedAt = updatedAt;
+    }
+
+    public int getTotalOrdered()
+    {
+        return totalOrdered;
+    }
+
+    public void setTotalOrdered(int totalOrdered)
+    {
+        this.totalOrdered = totalOrdered;
     }
 }

@@ -3,6 +3,7 @@ package com.lambdaschool.coffeebean.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -19,12 +20,16 @@ public class Supplier
     @Column(length = 250, unique = true)
     private String supplierPhone;
 
+    Date createdAt = new Date();
+
+    Date updatedAt = new Date();
+
     // *** ManyToMany with product - supplierproduct - owner ***
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "supplierProduct",
             joinColumns = {@JoinColumn(name = "supplierId")},
             inverseJoinColumns = {@JoinColumn(name = "productId")})
-    @JsonIgnoreProperties({"productReviews", "cartItems", "suppliers"})
+    @JsonIgnoreProperties({"productReviews", "cartItems", "suppliers", "createdAt", "updatedAt"})
     private Set<Product> productsFromSupplier;
 
     public Supplier()
@@ -69,5 +74,25 @@ public class Supplier
     public void setProductsFromSupplier(Set<Product> productsFromSupplier)
     {
         this.productsFromSupplier = productsFromSupplier;
+    }
+
+    public Date getCreatedAt()
+    {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt)
+    {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt)
+    {
+        this.updatedAt = updatedAt;
     }
 }

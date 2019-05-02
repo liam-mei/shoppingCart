@@ -18,7 +18,7 @@ public class Cart
     @JsonIgnoreProperties({
             "reviews", "orderHistory", "cart", "currentPassword",
             "middleName", "lastName", "customerPhone", "receiveEmails",
-            "addresses"})
+            "addresses", "createdAt", "updatedAt"})
     private User user;
 
     // OneToMany with CartItem - owner

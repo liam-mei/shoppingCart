@@ -3,7 +3,7 @@ package com.lambdaschool.coffeebean.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 @Table(name = "cartItems")
 @Entity
@@ -13,15 +13,17 @@ public class CartItem
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long cartItemId;
 
-    int quantity;
+    private int quantity;
 
-    Date dateAdded;
+    private Date createdAt = new Date();
 
     // ManyToOne with Product - owner
 //    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "productId")
-    @JsonIgnoreProperties({"cartItems", "productReviews", "suppliers"})
+    @JsonIgnoreProperties({
+            "cartItems", "productReviews", "suppliers",
+            "createdAt", "updatedAt"})
     private Product product;
 
     // ManyToOne with Cart
@@ -54,14 +56,14 @@ public class CartItem
         this.quantity = quantity;
     }
 
-    public Date getDateAdded()
+    public Date getCreatedAt()
     {
-        return dateAdded;
+        return createdAt;
     }
 
-    public void setDateAdded(Date dateAdded)
+    public void setCreatedAt(Date createdAt)
     {
-        this.dateAdded = dateAdded;
+        this.createdAt = createdAt;
     }
 
     public Product getProduct()

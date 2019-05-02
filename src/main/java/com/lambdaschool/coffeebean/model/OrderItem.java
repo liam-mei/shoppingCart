@@ -12,7 +12,7 @@ public class OrderItem
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long orderItemId;
 
-    int quantity;
+    private int quantity;
 
     // ManyToOne with Product - owner
 //    @JsonIgnore

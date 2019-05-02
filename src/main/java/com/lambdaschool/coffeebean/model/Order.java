@@ -23,7 +23,7 @@ public class Order
     private boolean shippedStatus = false;
 
     //yyyy-mm-dd HH:MM:SS
-    private Date orderDateTime = new Date();
+    private Date createdAt = new Date();
 
     //*** ManyToOne with user ***
     @ManyToOne
@@ -31,21 +31,26 @@ public class Order
     @JsonIgnoreProperties({
             "reviews", "orderHistory", "cart", "currentPassword",
             "middleName", "lastName", "customerPhone", "receiveEmails",
-            "addresses"})
+            "addresses", "createdAt", "updatedAt"})
     private User user;
 
+    // One To Many with OrderItem - don't ignore product - I want to see that
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
     @JsonIgnoreProperties({"order"})
     private Set<OrderItem> itemsInOrder;
 
     @ManyToOne
     @JoinColumn(name = "shippingAddressId")
-    @JsonIgnoreProperties({"user", "ordersUsingThisAsShipping", "ordersUsingThisAsBilling"})
+    @JsonIgnoreProperties({
+            "user", "ordersUsingThisAsShipping", "ordersUsingThisAsBilling",
+            "createdAt", "updatedAt"})
     private Address shippingAddress;
 
     @ManyToOne
     @JoinColumn(name = "billingAddressId")
-    @JsonIgnoreProperties({"user", "ordersUsingThisAsShipping", "ordersUsingThisAsBilling"})
+    @JsonIgnoreProperties({
+            "user", "ordersUsingThisAsShipping", "ordersUsingThisAsBilling",
+            "createdAt", "updatedAt"})
     private Address billingAddress;
 
     public Order()
@@ -93,14 +98,14 @@ public class Order
         this.shippedStatus = shippedStatus;
     }
 
-    public Date getOrderDateTime()
+    public Date getCreatedAt()
     {
-        return orderDateTime;
+        return createdAt;
     }
 
-    public void setOrderDateTime(Date orderDateTime)
+    public void setCreatedAt(Date createdAt)
     {
-        this.orderDateTime = orderDateTime;
+        this.createdAt = createdAt;
     }
 
     public User getUser()

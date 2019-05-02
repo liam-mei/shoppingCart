@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.lambdaschool.coffeebean.controller.View;
 
 import javax.persistence.*;
+import java.util.Date;
 
 
 @Entity
@@ -14,7 +15,7 @@ public class Review
     @JsonView(View.Essential.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long reviewId;
+    private Long reviewId;
 
     @JsonView(View.Essential.class)
     private String headline;
@@ -25,6 +26,11 @@ public class Review
     @JsonView(View.Essential.class)
     Integer stars;
 
+    @JsonView(View.Essential.class)
+    Date createdAt = new Date();
+
+    Date updatedAt = new Date();
+
     // ManyToOne with User - Owner
     @JsonView(View.Essential.class)
     @ManyToOne
@@ -32,21 +38,23 @@ public class Review
     @JsonIgnoreProperties({
             "reviews", "orderHistory", "cart", "currentPassword",
             "middleName", "lastName", "customerPhone", "receiveEmails",
-            "addresses", "email", "firstName"})
+            "addresses", "email", "firstName", "createdAt", "updatedAt"})
     private User reviewer;
 
     // ManyToOne with Product - Owner
     @JsonView(View.Essential.class)
     @ManyToOne
     @JoinColumn(name = "productId")
-    @JsonIgnoreProperties({"productReviews", "cartItems", "suppliers"})
+    @JsonIgnoreProperties({
+            "productReviews", "cartItems", "suppliers",
+            "createdAt", "updatedAt"})
     private Product reviewedProduct;
 
     public Review()
     {
     }
 
-    public long getReviewId()
+    public Long getReviewId()
     {
         return reviewId;
     }
@@ -104,5 +112,25 @@ public class Review
     public void setReviewedProduct(Product reviewedProduct)
     {
         this.reviewedProduct = reviewedProduct;
+    }
+
+    public Date getCreatedAt()
+    {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt)
+    {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt()
+    {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt)
+    {
+        this.updatedAt = updatedAt;
     }
 }
