@@ -34,13 +34,14 @@ public class CheckIsAdmin
 
     public static HashMap<String, Object> CheckUsernameEmailIsUnique(User newuser, UserRepository userrepos)
     {
+        String username = newuser.getUsername();
         String email = newuser.getEmail();
         String phone = newuser.getCustomerPhone();
         HashMap<String, Object> returnObject = new HashMap<>();
 
-        if (userrepos.findByUsername(newuser.getUsername()) != null) returnObject.put("usernameAlreadyExists", true);
-        if (email != null && userrepos.findByEmail(email) != null) returnObject.put("emailAlreadyExists", true);
-        if (phone != null && userrepos.findByCustomerPhone(phone) != null) returnObject.put("phoneAlreadyExists", true);
+        if (username != null && userrepos.existsByUsername(username)) returnObject.put("usernameAlreadyExists", true);
+        if (phone != null && userrepos.existsByCustomerPhone(phone)) returnObject.put("phoneAlreadyExists", true);
+        if (email != null && userrepos.existsByEmail(email)) returnObject.put("emailAlreadyExists", true);
         return returnObject;
     }
 }
