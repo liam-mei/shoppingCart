@@ -1,5 +1,6 @@
 package com.lambdaschool.coffeebean.service;
 
+import com.lambdaschool.coffeebean.model.Order;
 import com.lambdaschool.coffeebean.model.User;
 import com.lambdaschool.coffeebean.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -42,6 +43,14 @@ public class CheckIsAdmin
         if (username != null && userrepos.existsByUsername(username)) returnObject.put("usernameAlreadyExists", true);
         if (phone != null && userrepos.existsByCustomerPhone(phone)) returnObject.put("phoneAlreadyExists", true);
         if (email != null && userrepos.existsByEmail(email)) returnObject.put("emailAlreadyExists", true);
+        return returnObject;
+    }
+
+    public HashMap<String, Object> checkIfOrderHasBillingAndShipping(Order newOrder)
+    {
+        HashMap<String, Object> returnObject = new HashMap<>();
+        if (newOrder.getShippingAddress() == null) returnObject.put("shippingError", "missingShippingAddress");
+        if (newOrder.getBillingAddress() == null) returnObject.put("billingError", "missingBillingAddress");
         return returnObject;
     }
 }
