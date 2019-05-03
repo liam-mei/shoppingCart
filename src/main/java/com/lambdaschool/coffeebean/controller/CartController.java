@@ -10,9 +10,9 @@ import com.lambdaschool.coffeebean.repository.*;
 import com.lambdaschool.coffeebean.service.CheckIsAdmin;
 import com.lambdaschool.coffeebean.service.CurrentUser;
 import io.swagger.annotations.Api;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,28 +23,29 @@ import java.util.*;
 @RequestMapping(path = "/cart", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CartController extends CheckIsAdmin
 {
-    @Autowired
     UserRepository userrepos;
-
-    @Autowired
     OrderRepository orderrepos;
-
-    @Autowired
     ProductRepository productrepos;
-//
-    @Autowired
     CartRepository cartrepos;
-
-    @Autowired
     CartItemRepository cartitemrepos;
+
+    public CartController(UserRepository userrepos, OrderRepository orderrepos, ProductRepository productrepos,
+                          CartRepository cartrepos, CartItemRepository cartitemrepos)
+    {
+        this.userrepos = userrepos;
+        this.orderrepos = orderrepos;
+        this.productrepos = productrepos;
+        this.cartrepos = cartrepos;
+        this.cartitemrepos = cartitemrepos;
+    }
 
     // ==================== CART ==============================
 
-    @GetMapping("/test")
-    public List<Cart> testCartRepo()
-    {
-        return cartrepos.findAll();
-    }
+//    @GetMapping("/test")
+//    public List<Cart> testCartRepo()
+//    {
+//        return cartrepos.findAll();
+//    }
 
     @GetMapping("/{userId}")
     public Cart getCartByUserId(@PathVariable long userId)
@@ -225,17 +226,17 @@ public class CartController extends CheckIsAdmin
 //    // ============ BUY ================
 
     @PostMapping("/buy")
-    public Object buyItemsInCart()
+    public ResponseEntity<?> buyItemsInCart(@RequestBody Order newOrder)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long currentUserId = currentuser.getCurrentUserId();
 
         Set<CartItem> currentCartItems = cartrepos.getCartByCartId(currentUserId).getItemsInCart();
 
-        if (currentCartItems.isEmpty())
-        {
-            throw new BadRequestException(HttpStatus.BAD_REQUEST, "Your cart is empty");
-        }
+        if (currentCartItems.isEmpty()) throw new BadRequestException(HttpStatus.BAD_REQUEST, "Your cart is empty");
+
+        HashMap<String, Object> missingAddress = checkIfOrderHasBillingAndShipping(newOrder);
+        if (!missingAddress.isEmpty()) return new ResponseEntity<>(missingAddress, HttpStatus.BAD_REQUEST);
 
         ArrayList<HashMap<String, Object>> productsWithConstraint = new ArrayList<>();
 
@@ -255,26 +256,27 @@ public class CartController extends CheckIsAdmin
 
         if (productsWithConstraint.size() > 0)
         {
-            HashMap<Object, Object> returnObject = new HashMap<>();
-            returnObject.put("error", "inventory constraint - one or more items do not have sufficient inventory to support ordered quantity");
-            returnObject.put("productsWithConstraint", productsWithConstraint);
-            return returnObject;
+            HashMap<Object, Object> productConstraintError = new HashMap<>();
+            productConstraintError.put("error", "inventory constraint - one or more items do not have sufficient inventory to support ordered quantity");
+            productConstraintError.put("productsWithConstraint", productsWithConstraint);
+            return new ResponseEntity<>(productConstraintError, HttpStatus.BAD_REQUEST);
         }
 
-        Order newOrder = new Order();
         newOrder.setUser(userrepos.findById(currentUserId).get());
-        Order currentOrder = orderrepos.save(newOrder);
-        long currentOrderId = currentOrder.getOrderId();
+        newOrder.setShippedStatus(false);
+        newOrder.setOrderId(null);
+        Order savedOrder = orderrepos.save(newOrder);
+        long savedOrderId = savedOrder.getOrderId();
 
         currentCartItems.forEach(item ->
         {
-            orderrepos.addToOrderItem(currentOrderId, item.getProduct().getProductId(), item.getQuantity());
+            orderrepos.addToOrderItem(savedOrderId, item.getProduct().getProductId(), item.getQuantity());
             productrepos.removeOrderedQtyFromInventory(item.getProduct().getProductId(), item.getQuantity());
         });
 
         cartitemrepos.deleteAllItemsFromCart(currentuser.getCartId());
 
-        return orderrepos.findById(currentOrderId).get();
+        return new ResponseEntity<>(savedOrder, HttpStatus.OK);
     }
 
 }

@@ -89,7 +89,7 @@ public class AddressController extends CheckIsAdmin
 
         Address foundAddress = addressrepos.findAddressByUserIdAndAddressId(currentUserId, updatedAddress.getAddressId());
 
-        if (foundAddress != null)
+        if ( foundAddress != null )
         {
             if (updatedAddress.getZipcode() == null ) updatedAddress.setZipcode(foundAddress.getZipcode());
             if (updatedAddress.getStreet() == null ) updatedAddress.setStreet(foundAddress.getStreet());
