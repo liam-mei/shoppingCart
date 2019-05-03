@@ -13,7 +13,7 @@ public class Order
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long orderId;
+    private Long orderId;
 
     private String paymentDetails;
 
@@ -36,7 +36,7 @@ public class Order
 
     // One To Many with OrderItem - don't ignore product - I want to see that
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
-    @JsonIgnoreProperties({"order"})
+    @JsonIgnoreProperties({"order", "createdAt", "updatedAt"})
     private Set<OrderItem> itemsInOrder;
 
     @ManyToOne
@@ -58,12 +58,12 @@ public class Order
     }
 
 
-    public long getOrderId()
+    public Long getOrderId()
     {
         return orderId;
     }
 
-    public void setOrderId(long orderId)
+    public void setOrderId(Long orderId)
     {
         this.orderId = orderId;
     }

@@ -24,7 +24,7 @@ public class Cart
     // OneToMany with CartItem - owner
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "cart")
     // Don't ignore product as we need to see that
-    @JsonIgnoreProperties({"cart"})
+    @JsonIgnoreProperties({"cart", "createdAt", "updatedAt"})
     private Set<CartItem> itemsInCart;
 
     public Cart()
