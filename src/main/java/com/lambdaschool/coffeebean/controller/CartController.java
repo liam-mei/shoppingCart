@@ -5,39 +5,28 @@ import com.lambdaschool.coffeebean.exceptions.ForbiddenException;
 import com.lambdaschool.coffeebean.model.Cart;
 import com.lambdaschool.coffeebean.model.CartItem;
 import com.lambdaschool.coffeebean.model.Order;
-import com.lambdaschool.coffeebean.model.Product;
-import com.lambdaschool.coffeebean.repository.*;
+import com.lambdaschool.coffeebean.service.CartService;
 import com.lambdaschool.coffeebean.service.CheckIsAdmin;
 import com.lambdaschool.coffeebean.service.CurrentUser;
 import io.swagger.annotations.Api;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 @Api(value = "Some value... by DKM", description = "Cart Controller by DKM")
 @RestController
 @RequestMapping(path = "/cart", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CartController extends CheckIsAdmin
 {
-    UserRepository userrepos;
-    OrderRepository orderrepos;
-    ProductRepository productrepos;
-    CartRepository cartrepos;
-    CartItemRepository cartitemrepos;
-
-    public CartController(UserRepository userrepos, OrderRepository orderrepos, ProductRepository productrepos,
-                          CartRepository cartrepos, CartItemRepository cartitemrepos)
-    {
-        this.userrepos = userrepos;
-        this.orderrepos = orderrepos;
-        this.productrepos = productrepos;
-        this.cartrepos = cartrepos;
-        this.cartitemrepos = cartitemrepos;
-    }
+    @Autowired
+    CartService cartService;
 
     // ==================== CART ==============================
 
@@ -48,7 +37,7 @@ public class CartController extends CheckIsAdmin
 //    }
 
     @GetMapping("/{userId}")
-    public Cart getCartByUserId(@PathVariable long userId)
+    public ResponseEntity<?> getCartByUserId(@PathVariable long userId)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long currentUserId = currentuser.getCurrentUserId();
@@ -57,8 +46,8 @@ public class CartController extends CheckIsAdmin
 
         if (currentUserId == userId || isAdmin)
         {
-            return cartrepos.findById(currentuser.getCartId()).get();
-
+            Cart foundCart = cartService.getCartByCartId(userId);
+            return new ResponseEntity<>(foundCart, HttpStatus.OK);
         } else
         {
 //            throw new IOException("testMessage?");
@@ -71,7 +60,7 @@ public class CartController extends CheckIsAdmin
     }
 
     @GetMapping("/{userId}/orderbydate")
-    public List<CartItem> getCartByUserIdOrderByDate(@PathVariable long userId)
+    public ResponseEntity<?> getCartByUserIdOrderByDate(@PathVariable long userId)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long currentUserId = currentuser.getCurrentUserId();
@@ -80,7 +69,8 @@ public class CartController extends CheckIsAdmin
 
         if (currentUserId == userId || isAdmin)
         {
-            return cartitemrepos.findCartItemsByDate(currentuser.getCartId());
+            List<CartItem> cart = cartService.getCartByUserIdOrderByDate(currentuser.getCartId());
+            return new ResponseEntity<>(cart, HttpStatus.OK);
 
         } else
         {
@@ -90,7 +80,7 @@ public class CartController extends CheckIsAdmin
 
 
     @PostMapping("/addtocart/{cartId}/{productId}/{quantity}")
-    public HashMap<String, Object> postItemToCart(@PathVariable long cartId,
+    public ResponseEntity<?> addItemToCart(@PathVariable long cartId,
                                                   @PathVariable long productId,
                                                   @PathVariable int quantity)
     {
@@ -98,31 +88,11 @@ public class CartController extends CheckIsAdmin
         long currentUserCartId = currentuser.getCartId();
 
         boolean isAdmin = testIsAdmin(currentuser);
-        HashMap<String, Object> returnObject = new HashMap<>();
 
         if (currentUserCartId == cartId || isAdmin)
         {
-            CartItem foundCartItem = cartitemrepos.findCartItem(cartId, productId);
-            if (foundCartItem != null)
-            {
-                int previousQuantity = foundCartItem.getQuantity();
-                int total = previousQuantity + quantity;
-                cartitemrepos.modifyQuantityInCart(currentUserCartId, productId, total);
-
-                returnObject.put("cartId", cartId);
-                returnObject.put("previouslyExisted", true);
-                returnObject.put("productName", foundCartItem.getProduct().getProductName());
-                returnObject.put("previousQuantity", previousQuantity);
-                returnObject.put("quantityToBeAdded", quantity);
-                returnObject.put("totalQuantity", total);
-            } else
-            {
-                cartitemrepos.postCartItemToCart(new Date(), quantity, currentUserCartId, productId);
-                returnObject.put("cartId", cartId);
-                returnObject.put("prevouslyExisted", false);
-                returnObject.put("quantityToBeAdded", quantity);
-            }
-            return returnObject;
+            HashMap<String, Object> cartDetails = cartService.addItemToCart(currentUserCartId, productId, quantity);
+            return new ResponseEntity<>(cartDetails, HttpStatus.OK);
         } else
         {
             throw new ForbiddenException(HttpStatus.FORBIDDEN, "cart being added to does not match current user's cart");
@@ -130,7 +100,7 @@ public class CartController extends CheckIsAdmin
     }
 
     @PutMapping("/modifyquantityincart/{cartId}/{productId}/{quantity}")
-    public Object modifyQuantityInCart(@PathVariable long cartId,
+    public ResponseEntity<?> updateQuantityInCart(@PathVariable long cartId,
                                        @PathVariable long productId,
                                        @PathVariable int quantity)
     {
@@ -141,18 +111,8 @@ public class CartController extends CheckIsAdmin
 
         if (currentUserCartId == cartId || isAdmin)
         {
-            CartItem foundCartItem = cartitemrepos.findCartItem(currentUserCartId, productId);
-            if (foundCartItem != null)
-            {
-                int previousQuantity = foundCartItem.getQuantity();
-                cartitemrepos.modifyQuantityInCart(cartId, productId, quantity);
-                return "There were " + previousQuantity + ", but now there are " + quantity + " of " +
-                        foundCartItem.getProduct().getProductName() + " in " + currentuser.getUsername() + "'s cart.";
-            } else
-            {
-                return cartId + " does not have productId: " + productId + "in their cart.";
-            }
-
+            HashMap<String, Object> cartDetails = cartService.updateQuantityInCart(currentUserCartId, productId, quantity);
+            return new ResponseEntity<>(cartDetails, HttpStatus.OK);
         } else
         {
             throw new ForbiddenException(HttpStatus.FORBIDDEN, "cart being modified does not match current user's cart");
@@ -161,7 +121,7 @@ public class CartController extends CheckIsAdmin
     }
 
     @DeleteMapping("/remove/{cartId}/{productId}")
-    public Object deleteOneItemFromCart(@PathVariable long cartId, @PathVariable long productId)
+    public ResponseEntity<?> deleteOneItemFromCart(@PathVariable long cartId, @PathVariable long productId)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long currentUserCartId = currentuser.getCartId();
@@ -170,8 +130,8 @@ public class CartController extends CheckIsAdmin
 
         if (currentUserCartId == cartId || isAdmin)
         {
-            cartitemrepos.deleteOneItemFromCart(currentUserCartId, productId);
-            return "You have deleted product: " + productId + " from user: " + currentuser.getCurrentUserId();
+            cartService.deleteOneItemFromCart(currentUserCartId, productId);
+            return new ResponseEntity<>("You have deleted product: " + productId + " from user: " + currentuser.getCurrentUserId(), HttpStatus.OK);
 
         } else
         {
@@ -181,7 +141,7 @@ public class CartController extends CheckIsAdmin
     }
 
     @DeleteMapping("/modifytozero/{cartId}/{productId}")
-    public Object modifyToZero(@PathVariable long cartId, @PathVariable long productId)
+    public ResponseEntity<?> updateToZero(@PathVariable long cartId, @PathVariable long productId)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long currentUserCartId = currentuser.getCartId();
@@ -190,8 +150,8 @@ public class CartController extends CheckIsAdmin
 
         if (currentUserCartId == cartId || isAdmin)
         {
-            cartitemrepos.modifyQuantityInCart(currentUserCartId, productId, 0);
-            return "There are now 0 of " + productId + " in " + currentuser.getCurrentUserId() + "'s cart.";
+            cartService.updateToZero(currentUserCartId, productId);
+            return new ResponseEntity<>("There are now 0 of " + productId + " in " + currentuser.getCurrentUserId() + "'s cart.", HttpStatus.OK);
 
         } else
         {
@@ -202,7 +162,7 @@ public class CartController extends CheckIsAdmin
     }
 
     @DeleteMapping("/deleteall/{cartId}")
-    public Object deleteAllItemsFromCart(@PathVariable long cartId)
+    public ResponseEntity<?> deleteAllItemsFromCart(@PathVariable long cartId)
     {
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long currentUserId = currentuser.getCurrentUserId();
@@ -212,8 +172,8 @@ public class CartController extends CheckIsAdmin
 
         if (currentUserCartId == cartId || isAdmin)
         {
-            cartitemrepos.deleteAllItemsFromCart(currentUserCartId);
-            return "You have deleted all itemsInCart in cart from user :" + currentUserId;
+            cartService.deleteAllItemsFromCart(currentUserCartId);
+            return new ResponseEntity<>("You have deleted all itemsInCart in cart from user :" + currentUserId, HttpStatus.OK);
 
         } else
         {
@@ -231,50 +191,21 @@ public class CartController extends CheckIsAdmin
         CurrentUser currentuser = (CurrentUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long currentUserId = currentuser.getCurrentUserId();
 
-        Set<CartItem> currentCartItems = cartrepos.getCartByCartId(currentUserId).getItemsInCart();
+        Set<CartItem> currentCartItems = cartService.getCartByCartId(currentUserId).getItemsInCart();
 
-        if (currentCartItems.isEmpty()) throw new BadRequestException(HttpStatus.BAD_REQUEST, "Your cart is empty");
+        if (currentCartItems.isEmpty())
+            throw new BadRequestException(HttpStatus.BAD_REQUEST, "Your cart is empty");
 
         HashMap<String, Object> missingAddress = checkIfOrderHasBillingAndShipping(newOrder);
-        if (!missingAddress.isEmpty()) return new ResponseEntity<>(missingAddress, HttpStatus.BAD_REQUEST);
+        if (!missingAddress.isEmpty())
+            return new ResponseEntity<>(missingAddress, HttpStatus.BAD_REQUEST);
 
-        ArrayList<HashMap<String, Object>> productsWithConstraint = new ArrayList<>();
+        HashMap<String, Object> productConstraintError = cartService.checkInventory(currentCartItems);
 
-        currentCartItems.forEach(cartItem ->
-        {
-            if ( cartItem.getProduct().getInventory() < cartItem.getQuantity() )
-            {
-                Product cartProduct = cartItem.getProduct();
-                HashMap<String, Object> constraintObj = new HashMap<>();
-                constraintObj.put("productId", cartProduct.getProductId());
-                constraintObj.put("productName", cartProduct.getProductName());
-                constraintObj.put("inventory", cartProduct.getInventory());
-                constraintObj.put("cartQuantity", cartItem.getQuantity());
-                productsWithConstraint.add(constraintObj);
-            }
-        });
-
-        if (productsWithConstraint.size() > 0)
-        {
-            HashMap<Object, Object> productConstraintError = new HashMap<>();
-            productConstraintError.put("error", "inventory constraint - one or more items do not have sufficient inventory to support ordered quantity");
-            productConstraintError.put("productsWithConstraint", productsWithConstraint);
+        if (productConstraintError.containsKey("error"))
             return new ResponseEntity<>(productConstraintError, HttpStatus.BAD_REQUEST);
-        }
 
-        newOrder.setUser(userrepos.findById(currentUserId).get());
-        newOrder.setShippedStatus(false);
-        newOrder.setOrderId(null);
-        Order savedOrder = orderrepos.save(newOrder);
-        long savedOrderId = savedOrder.getOrderId();
-
-        currentCartItems.forEach(item ->
-        {
-            orderrepos.addToOrderItem(savedOrderId, item.getProduct().getProductId(), item.getQuantity());
-            productrepos.removeOrderedQtyFromInventory(item.getProduct().getProductId(), item.getQuantity());
-        });
-
-        cartitemrepos.deleteAllItemsFromCart(currentuser.getCartId());
+        Order savedOrder = cartService.buyItemsInCart(newOrder, currentCartItems, currentUserId, currentuser.getCartId());
 
         return new ResponseEntity<>(savedOrder, HttpStatus.OK);
     }
