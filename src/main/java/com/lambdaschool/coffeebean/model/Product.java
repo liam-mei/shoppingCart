@@ -44,12 +44,12 @@ public class Product
 
     // ====== Review ======
     // OneToMany with Review
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "reviewedProduct")
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "reviewedProduct", fetch = FetchType.EAGER)
     @JsonIgnoreProperties({"reviewedProduct", "createdAt", "updatedAt"})
     private Set<Review> productReviews;
 
     // OneToMany with CartItem - subowner
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "product", fetch = FetchType.EAGER)
     @JsonIgnoreProperties({"product", "cart", "createdAt"})
     private Set<CartItem> cartItems;
 
