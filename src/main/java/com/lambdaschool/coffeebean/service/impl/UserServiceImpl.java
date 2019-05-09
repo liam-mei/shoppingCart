@@ -37,6 +37,11 @@ public class UserServiceImpl implements UserDetailsService, UserService
 
         User u = userrepository.findByUsername(s);
 
+        if (u == null)
+        {
+            throw new UsernameNotFoundException("Invalid username or password.");
+        }
+
         return new CurrentUser(u.getUsername(), u.getPassword(), u.getAuthority(), u.getFirstName(), u.getUserId(), u.getEmail(), u.getCart().getCartId()
         );
     }
