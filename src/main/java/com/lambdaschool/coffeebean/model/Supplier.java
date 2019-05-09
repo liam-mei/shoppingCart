@@ -12,7 +12,7 @@ public class Supplier
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long supplierId;
+    private Long supplierId;
 
     @Column(length = 250, unique = true)
     private String supplierName;
@@ -36,12 +36,12 @@ public class Supplier
     {
     }
 
-    public long getSupplierId()
+    public Long getSupplierId()
     {
         return supplierId;
     }
 
-    public void setSupplierId(long supplierId)
+    public void setSupplierId(Long supplierId)
     {
         this.supplierId = supplierId;
     }

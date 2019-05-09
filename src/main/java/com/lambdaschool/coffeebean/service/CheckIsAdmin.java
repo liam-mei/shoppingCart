@@ -33,7 +33,7 @@ public class CheckIsAdmin
         }};
     }
 
-    public static HashMap<String, Object> CheckUsernameEmailIsUnique(User newuser, UserRepository userrepos)
+    public static HashMap<String, Object> checkUniqueUserParameters(User newuser, UserRepository userrepos)
     {
         String username = newuser.getUsername();
         String email = newuser.getEmail();
@@ -43,6 +43,19 @@ public class CheckIsAdmin
         if (username != null && userrepos.existsByUsername(username)) returnObject.put("usernameAlreadyExists", true);
         if (phone != null && userrepos.existsByCustomerPhone(phone)) returnObject.put("phoneAlreadyExists", true);
         if (email != null && userrepos.existsByEmail(email)) returnObject.put("emailAlreadyExists", true);
+        return returnObject;
+    }
+
+    public static HashMap<String, Object> checkUpdatedUserParemeters(User updatedUser, User foundUser, UserRepository userRepos)
+    {
+        String username = updatedUser.getUsername();
+        String email = updatedUser.getEmail();
+        String phone = updatedUser.getCustomerPhone();
+        HashMap<String, Object> returnObject = new HashMap<>();
+
+        if (username != null && !username.equalsIgnoreCase(foundUser.getUsername()) && userRepos.existsByUsername(username)) returnObject.put("usernameAlreadyExists", true);
+        if (phone != null && !phone.equalsIgnoreCase(foundUser.getCustomerPhone()) && userRepos.existsByCustomerPhone(phone)) returnObject.put("phoneAlreadyExists", true);
+        if (email != null && !email.equalsIgnoreCase(foundUser.getEmail()) && userRepos.existsByEmail(email)) returnObject.put("emailAlreadyExists", true);
         return returnObject;
     }
 
