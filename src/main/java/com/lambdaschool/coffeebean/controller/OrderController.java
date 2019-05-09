@@ -1,15 +1,16 @@
 package com.lambdaschool.coffeebean.controller;
 
 import com.lambdaschool.coffeebean.model.Order;
-import com.lambdaschool.coffeebean.repository.OrderRepository;
+import com.lambdaschool.coffeebean.service.OrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @CrossOrigin
 @Api(value = "Some value... by DKM", description = "Order Controller by DKM")
@@ -17,56 +18,42 @@ import java.util.Optional;
 @RequestMapping(path = "/orders", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OrderController
 {
-    private final
-    OrderRepository orderrepos;
-
-    public OrderController(OrderRepository orderrepos)
-    {
-        this.orderrepos = orderrepos;
-    }
+    @Autowired
+    OrderService orderService;
 
     @ApiOperation(value = "find all orders - DKM", response = Order.class)
-    @GetMapping("")
-    public List<Order> findAllOrders()
+    @GetMapping
+    public ResponseEntity<?> findAllOrders()
     {
-        return orderrepos.findAll();
+        List<Order> allOrders = orderService.findAllOrders();
+        return new ResponseEntity<>(allOrders, HttpStatus.OK);
     }
 
     @GetMapping("/{orderid}")
-    public Order findOrderByOrderId(@PathVariable long orderid)
+    public ResponseEntity<?> findOrderByOrderId(@PathVariable long orderid)
     {
-        return orderrepos.findById(orderid).get();
+        Order foundOrder = orderService.findOrderByOrderId(orderid);
+        return new ResponseEntity<>(foundOrder, HttpStatus.OK);
     }
 
     @GetMapping("/unshipped")
-    public List<Order> findUnshippedOrders()
+    public ResponseEntity<?> findUnshippedOrders()
     {
-        return orderrepos.findUnshippedOrders();
+        List<Order> unshippedOrders = orderService.findUnshippedOrders();
+        return new ResponseEntity<>(unshippedOrders, HttpStatus.OK);
     }
 
     @GetMapping("/shipped")
-    public List<Order> findShippedOrders()
+    public ResponseEntity<?> findShippedOrders()
     {
-        return orderrepos.findShippedOrders();
+        List<Order> shippedOrders = orderService.findShippedOrders();
+        return new ResponseEntity<>(shippedOrders, HttpStatus.OK);
     }
 
     @PutMapping("/updateshippingstatus/{orderid}/{status}")
-    public Order updateShippingStatus(@PathVariable long orderid, @PathVariable boolean status)
+    public ResponseEntity<?> updateShippingStatus(@PathVariable long orderid, @PathVariable boolean status)
     {
-        Optional<Order> foundOrder = orderrepos.findById(orderid);
-
-        if (foundOrder.isPresent())
-        {
-            foundOrder.get().setShippedStatus(status);
-            if (status)
-                foundOrder.get().setShipDateTime(new Date());
-            if (!status)
-                foundOrder.get().setShipDateTime(null);
-            return orderrepos.save(foundOrder.get());
-        } else
-        {
-            return null;
-        }
-
+        Order updatedOrder = orderService.updateShippingStatus(orderid, status);
+        return new ResponseEntity<>(updatedOrder, HttpStatus.OK);
     }
 }

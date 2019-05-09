@@ -30,10 +30,10 @@ public class SignupController extends CheckIsAdmin
     @Autowired
     SendGridService2 emailService;
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<?> addNewUser(@RequestBody User newuser) throws URISyntaxException, IOException
     {
-        HashMap<String, Object> returnObject = CheckIsAdmin.CheckUsernameEmailIsUnique(newuser, userrepos);
+        HashMap<String, Object> returnObject = CheckIsAdmin.checkUniqueUserParameters(newuser, userrepos);
         if (newuser.getPassword() == null) returnObject.put("passwordError", "passwordRequired");
         if (newuser.getEmail() == null) returnObject.put("emailError", "emailRequired");
         if (!returnObject.isEmpty()) return new ResponseEntity<>(returnObject, HttpStatus.BAD_REQUEST);

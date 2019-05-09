@@ -36,7 +36,7 @@ public class UserController extends CheckIsAdmin
     @PostMapping("/addadmin")
     public Object addNewUser(@RequestBody User newuser) throws URISyntaxException
     {
-        HashMap<String, Object> returnObject = CheckIsAdmin.CheckUsernameEmailIsUnique(newuser, userrepos);
+        HashMap<String, Object> returnObject = CheckIsAdmin.checkUniqueUserParameters(newuser, userrepos);
         if (!returnObject.isEmpty()) return returnObject;
 
         newuser.setCart(new Cart());

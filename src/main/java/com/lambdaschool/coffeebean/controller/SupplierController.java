@@ -1,16 +1,20 @@
 package com.lambdaschool.coffeebean.controller;
 
 import com.lambdaschool.coffeebean.model.Supplier;
-import com.lambdaschool.coffeebean.repository.SupplierRepository;
+import com.lambdaschool.coffeebean.service.SupplierService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.Date;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Optional;
 
 @Api(value = "Some value... by DKM", description = "Supplier Controller by DKM")
 @RestController
@@ -18,78 +22,67 @@ import java.util.Optional;
 public class SupplierController
 {
     @Autowired
-    SupplierRepository suppplierrepos;
+    SupplierService supplierService;
 
     @ApiOperation(value = "find all orders - DKM", response = Supplier.class)
-    @GetMapping("")
-    public List<Supplier> findAllOrders()
+    @GetMapping
+    public ResponseEntity<?> findAllSuppliers()
     {
-        return suppplierrepos.findAll();
+        List<Supplier> allSuppliers = supplierService.findAllSuppliers();
+        return new ResponseEntity<>(allSuppliers, HttpStatus.OK);
     }
 
     @GetMapping("/{supplierId}")
-    public Supplier getSupplierById(@PathVariable long supplierId)
+    public ResponseEntity<?> getSupplierById(@PathVariable long supplierId)
     {
-        return suppplierrepos.findById(supplierId).get();
+        Supplier foundSupplier = supplierService.findSupplierById(supplierId);
+        return new ResponseEntity<>(foundSupplier, HttpStatus.OK);
     }
 
-    @PostMapping("")
-    public Supplier addSupplier(@RequestBody Supplier newSupplier)
+    @PostMapping
+    public ResponseEntity<?> addSupplier(@RequestBody Supplier newSupplier) throws URISyntaxException
     {
-        return suppplierrepos.save(newSupplier);
+        newSupplier = supplierService.addSupplier(newSupplier);
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+
+        URI newSupplierURI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{restaurantid}")
+                .buildAndExpand(newSupplier.getSupplierId()).toUri();
+
+        responseHeaders.setLocation(newSupplierURI);
+
+        return new ResponseEntity<>(newSupplier, responseHeaders, HttpStatus.CREATED);
     }
 
     @PostMapping("/supplierid/{supplierId}/productid/{productId}")
-    public Supplier addSupplierToProduct(@PathVariable long supplierId, @PathVariable long productId)
+    public ResponseEntity<?> addSupplierToProduct(@PathVariable long supplierId, @PathVariable long productId)
     {
-        suppplierrepos.addSupplierToProduct(supplierId, productId);
-        return suppplierrepos.findById(supplierId).get();
+        Supplier updatedSupplier = supplierService.addSupplierToProduct(supplierId, productId);
+        return new ResponseEntity<>(updatedSupplier, HttpStatus.OK);
     }
 
-    @PutMapping("/{supplierId}")
-    public Object updateSupplierBySupplierID(@PathVariable long supplierId, @RequestBody Supplier updatedSupplier)
+    @PutMapping
+    public ResponseEntity<?> updateSupplierBySupplierID(@RequestBody Supplier updatedSupplier)
     {
-        Optional<Supplier> foundSupplier = suppplierrepos.findById(supplierId);
+        updatedSupplier = supplierService.updateSupplierBySupplierID(updatedSupplier);
 
-        if (foundSupplier.isPresent())
-        {
-            updatedSupplier.setSupplierId(supplierId);
-            if (updatedSupplier.getSupplierName() == null)
-                updatedSupplier.setSupplierName(foundSupplier.get().getSupplierName());
-            if (updatedSupplier.getSupplierPhone() == null)
-                updatedSupplier.setSupplierPhone(foundSupplier.get().getSupplierPhone());
-            if (updatedSupplier.getProductsFromSupplier().isEmpty())
-                updatedSupplier.setProductsFromSupplier(foundSupplier.get().getProductsFromSupplier());
-
-            updatedSupplier.setCreatedAt(foundSupplier.get().getCreatedAt());
-            updatedSupplier.setUpdatedAt(new Date());
-            return suppplierrepos.save(updatedSupplier);
-        } else
-        {
-            return "Supplier with id: " + supplierId + " is not found.";
-        }
+        return new ResponseEntity<>(updatedSupplier, HttpStatus.OK);
     }
 
     @DeleteMapping("/supplierid/{supplierId}/productid/{productId}")
-    public Supplier deleteSupplierFromProduct(@PathVariable long supplierId, @PathVariable long productId)
+    public ResponseEntity<?> deleteSupplierFromProduct(@PathVariable long supplierId, @PathVariable long productId)
     {
-        Supplier foundSupplier = suppplierrepos.findById(supplierId).get();
-        suppplierrepos.deleteSupplierFromProduct(supplierId, productId);
-        return foundSupplier;
+        Supplier foundSupplier = supplierService.deleteSupplierFromProduct(supplierId, productId);
+
+        return new ResponseEntity<>(foundSupplier, HttpStatus.OK);
     }
 
     @DeleteMapping("/{supplierId}")
-    public Object deleteSupplierById(@PathVariable long supplierId)
+    public ResponseEntity<?> deleteSupplierById(@PathVariable long supplierId)
     {
-        Optional<Supplier> foundSupplier = suppplierrepos.findById(supplierId);
-        if (foundSupplier.isPresent())
-        {
-            suppplierrepos.deleteById(supplierId);
-            return foundSupplier.get();
-        } else
-        {
-            return "Supplier with id: " + supplierId + " is not found.";
-        }
+        Supplier deletedSupplier = supplierService.deleteSupplierById(supplierId);
+
+        return new ResponseEntity<>(deletedSupplier, HttpStatus.OK);
     }
 
 }

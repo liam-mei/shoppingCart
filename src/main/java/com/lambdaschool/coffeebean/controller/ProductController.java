@@ -1,16 +1,16 @@
 package com.lambdaschool.coffeebean.controller;
 
 import com.lambdaschool.coffeebean.model.Product;
-import com.lambdaschool.coffeebean.repository.ProductRepository;
+import com.lambdaschool.coffeebean.service.ProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Api(value = "Some value... by DKM", description = "Product Controller by DKM")
 @RestController
@@ -18,63 +18,43 @@ import java.util.Optional;
 public class ProductController
 {
     @Autowired
-    ProductRepository productrepos;
+    ProductService productService;
 
     @ApiOperation(value = "find all orders - DKM", response = Product.class)
     @GetMapping("")
-    public List<Product> findAllOrders()
+    public ResponseEntity<?> findAllProducts()
     {
-        return productrepos.findAll();
+        List<Product> allProducts = productService.findAllProducts();
+        return new ResponseEntity<>(allProducts, HttpStatus.OK);
     }
 
     @GetMapping("/{productId}")
-    public Product findProductByProductId(@PathVariable long productId)
+    public ResponseEntity<?> findProductByProductId(@PathVariable long productId)
     {
-        return productrepos.findById(productId).get();
+        Product foundProduct = productService.findProductByProductId(productId);
+        return new ResponseEntity<>(foundProduct, HttpStatus.OK);
     }
 
-    @PostMapping("")
-    public Product addToProducts(@RequestBody Product newProduct)
+    @PostMapping
+    public ResponseEntity<?> addNewProduct(@RequestBody Product newProduct)
     {
-        newProduct.setProductId(null);
-        return productrepos.save(newProduct);
+        Product savedProduct = productService.addNewProduct(newProduct);
+        return new ResponseEntity<>(savedProduct, HttpStatus.OK);
     }
 
-    @PutMapping("/{productId}")
-    public Object modifyProductById(@RequestBody Product updatedP, @PathVariable long productId)
+    @PutMapping
+    public ResponseEntity<?> updateProductById(@RequestBody Product updatedP)
     {
-        Optional<Product> foundProduct = productrepos.findById(productId);
-        if (foundProduct.isPresent())
-        {
-            if (updatedP.getProductName() == null) updatedP.setProductName(foundProduct.get().getProductName());
-            if (updatedP.getDescription() == null) updatedP.setDescription(foundProduct.get().getDescription());
-//            if (updatedP.getExpiration() == null) updatedP.setExpiration(foundProduct.get().getExpiration());
-            if (updatedP.getSuppliers() == null) updatedP.setSuppliers(foundProduct.get().getSuppliers());
-            if (updatedP.getInventory() == null) updatedP.setInventory(foundProduct.get().getInventory());
-            if (updatedP.getImage() == null) updatedP.setImage(foundProduct.get().getImage());
-            if (updatedP.getPrice() == null) updatedP.setPrice(foundProduct.get().getPrice());
-
-            updatedP.setUpdatedAt(new Date());
-            updatedP.setProductId(productId);
-            return productrepos.save(updatedP);
-        } else
-        {
-            return "Product with id: " + productId + " could not be found.";
-        }
+        Product foundProduct = productService.findProductByProductId(updatedP.getProductId());
+        Product savedProduct = productService.updateProductById(updatedP, foundProduct);
+        return new ResponseEntity<>(savedProduct, HttpStatus.OK);
     }
 
     @DeleteMapping("/{productId}")
-    public Object deleteProductById(@PathVariable long productId)
+    public ResponseEntity<?> deleteProductById(@PathVariable long productId)
     {
-        Optional<Product> foundProduct = productrepos.findById(productId);
-        if (foundProduct.isPresent())
-        {
-            productrepos.deleteById(productId);
-            return foundProduct.get();
-        } else
-        {
-            return "Product with id: " + productId + " could not be found.";
-        }
+        Product deletedProduct = productService.deleteProductById(productId);
+        return new ResponseEntity<>(deletedProduct, HttpStatus.OK);
     }
 
 }

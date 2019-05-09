@@ -29,8 +29,8 @@ import javax.annotation.Resource;
 public class SecurityConfig extends WebSecurityConfigurerAdapter
 {
     // testing signup url
-    private static final String SIGN_UP_URL = "/signup";
-    private static final String SHOP_URL = "/shop";
+//    private static final String SIGN_UP_URL = "/signup";
+//    private static final String SHOP_URL = "/shop";
 
     @Resource(name = "userService")
     private UserDetailsService userDetailsService;
@@ -56,9 +56,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter
                 .authorizeRequests()
                 .antMatchers("/swagger-ui.html").permitAll()
                 .antMatchers("/api-docs/**").permitAll()
-                .antMatchers("/cart/**").permitAll()
-                .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
-                .antMatchers(HttpMethod.GET, SHOP_URL).permitAll();
+//                .antMatchers("/cart/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/signup").permitAll()
+                .antMatchers(HttpMethod.GET, "/shop").permitAll();
         http.csrf().disable();
         http.headers().frameOptions().disable();
     }
